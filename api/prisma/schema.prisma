@@ -1,0 +1,528 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  userType  UserType
+  verified  Boolean? @default(false)
+}
+
+model TrustAcc {
+  rowId                      String  @id @default(auto()) @map("_id") @db.ObjectId
+  pspId                      String
+  bankId                     String
+  reportingDate              String
+  bankAccNumber              String
+  trustAccDrTypeCode         String
+  orgReceivingDonation       String
+  sectorCode                 SectorCode
+  trustAccIntUtilizedDetails String
+  openingBal                 Float
+  principalAmount            Float
+  interestEarned             Float
+  closingBal                 Float
+  trustAccInterestUtilized   Float?  @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model TrustAccPlacement {
+  rowId                    String @id @default(auto()) @map("_id") @db.ObjectId
+  pspId                    String
+  reportingDate            String
+  trustFundPlacement       TrustFundPlacement
+  trustFundInvMaturityDate String
+  catTrustFundInvestedAmt  Float  @default(0)
+  interestAmtPerCat        Float  @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model FraudIncident {
+  rowId             String         @id @default(auto()) @map("_id") @db.ObjectId
+  pspId             String
+  reportingDate     String
+  subCountyCode     String
+  subFraudCode      String
+  fraudCategoryFlag String
+  victimCategory    String
+  victimInfo        String
+  dateOfOccurence   String
+  numberOfIncidents Int
+  amountInvolved    Float          @default(0)
+  amountLost        Float          @default(0)
+  amountRecovered   Float          @default(0)
+  actionTaken       String
+  recoveryDetails   RecoveryStatus
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model CounterfeitCurrencyFraud {
+  rowId              String @id @default(auto()) @map("_id") @db.ObjectId
+  pspId              String
+  reportingDate      String
+  subCountyCode      String
+  agentId            String
+  denominationCode   String
+  serialNumber       String
+  depositorsName     String
+  tellersName        String
+  dateConfiscated    String?
+  dateSubmittedToCBK String?
+  remarks            String
+  numberOfPieces     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model CybersecurityIncident {
+  rowId                         String   @id @default(auto()) @map("_id") @db.ObjectId
+  pspId                         String
+  reportingDate                 String
+  incidentNumber                String?  @default(uuid())
+  locationOfAttacker            String?
+  incidentMode                  String
+  datetimeOfIncident            String?
+  lossType                      String
+  detailsOfIncident             String
+  actionTakenToManageIncident   String
+  datetimeOfIncidentResolution  String?
+  actionTakenToMitigateIncident String
+  amountInvolved                Float
+  amountLost                    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Director {
+  rowId                  String       @id @default(auto()) @map("_id") @db.ObjectId
+  pspId                  String
+  reportingDate          String
+  directorName           String
+  directorGender         Gender
+  directorType           DirectorType
+  dateOfBirth            String
+  nationalityOfDirector  String
+  residenceOfDirector    String
+  idNumber               String
+  kraPin                 String
+  contact                String
+  academicQualifications String?      @default("")
+  otherDirectorships     String?      @default("N/A")
+  dateOfAppointment      String
+  dateOfRetirement       String?      @default("")
+  reasonForRetirement    String?      @default("")
+  disclosureDetails      String?      @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Shareholder {
+  rowId                    String            @id @default(auto()) @map("_id") @db.ObjectId
+  pspId                    String
+  reportingDate            String
+  shareholderName          String
+  shareholderGender        ShareholderGender
+  shareholderType          ShareholderType
+  dateOfBirth              String
+  nationalityOfShareholder String
+  residenceOfShareholder   String
+  countryOfIncorporation   String
+  idNumber                 String
+  kraPin                   String
+  contact                  String
+  academicQualifications   String?           @default("")
+  previousEmployment       String?           @default("")
+  dateBecameShareholder    String
+  numberOfShareHeld        Int
+  shareValue               Float
+  percentageOfShare        Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Trustee {
+  rowId                    String  @id @default(auto()) @map("_id") @db.ObjectId
+  pspId                    String
+  reportingDate            String
+  trustCompanyName         String
+  directorsOfTrustCo       String
+  trusteeNames             String
+  trustGender              Gender
+  dateOfBirth              String
+  nationalityOfTrustee     String
+  residenceOfShareholder   String
+  idNumber                 String
+  kraPin                   String
+  contact                  String
+  academicQualifications   String
+  otherTrusteeships        String? @default("")
+  disclosureDetails        String? @default("")
+  shareholderOfTrust       String
+  percentageOfShareholding Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model SeniorMgt {
+  rowId                    String  @id @default(auto()) @map("_id") @db.ObjectId
+  pspId                    String
+  reportingDate            String
+  officerName              String
+  officerGender            Gender
+  designation              String
+  dateOfBirth              String
+  nationalityOfOfficer     String
+  idNumber                 String
+  kraPin                   String
+  academicQualifications   String? @default("")
+  dateOfEmployment         String
+  employmentType           String
+  expectedDateOfRetirement String
+  otherAffiliations        String? @default("N/A")
+  disclosureDetails        String? @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model ExchangeRatesInfo {
+  rowId            String @id @default(auto()) @map("_id") @db.ObjectId
+  institutionCode  String
+  reportingDate    String
+  currencyCode     String
+  buyingRate       Float
+  sellingRate      Float
+  meanRate         Float
+  closingBidRate   Float
+  closingOfferRate Float
+  usdCrossRate     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model ForeignExchangePosition {
+  rowId                    String @id @default(auto()) @map("_id") @db.ObjectId
+  institutionCode          String
+  reportingDate            String
+  currencyCode             String
+  kesSpotRate              Float
+  openingPositionAmount    Float
+  totalInflowsAmount       Float
+  otherTotalInflowsAmount  Float
+  totalOutflowsAmount      Float
+  otherTotalOutflowsAmount Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model DirectorManagementInfo {
+  academicQualification   String
+  appointmentDate         String
+  bankingExperience       Int
+  boardChairCommittee     String?
+  boardCommitteeName      String?
+  cbkApprovalDate         String
+  companyName             String?
+  contactNumber           String?
+  dob                     String
+  email                   String?
+  executiveCatType        String
+  gender                  Gender
+  identificationNumber    String
+  institutionCode         String
+  managementCommitteeName String?
+  memberType              String?
+  nameOfDirector          String
+  nationality             String
+  passportNumber          String?
+  profession              String
+  reportingDate           String
+  residency               String
+  roleInCompany           String?
+  rowId                   String  @id @default(auto()) @map("_id") @db.ObjectId
+  sequenceId              String
+  shareholdingFlag        String?
+  shareholdingInfo        String?
+  staffId                 String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model ShareholderInfo {
+  rowId               String  @id @default(auto()) @map("_id") @db.ObjectId
+  bankCode            String
+  reportingDate       String
+  shareholderSequence String
+  name                String
+  gender              Gender
+  type                String
+  registrationDate    String
+  nationality         String
+  residence           String
+  idNumber            String
+  address             String?
+  phoneNumber         String?
+  majorPromoter       String?
+  subscribedShares    Float
+  shareValue          Float
+  shareholdingAmount  Float
+  paidUpShares        Float
+  percentageOfShare   Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model FinancialPosition {
+  rowId             String @id @default(auto()) @map("_id") @db.ObjectId
+  fxbCode           String
+  reportingDate     String
+  mappingCode       String
+  amount            Float
+  numberOfEmployees Int
+  numberOfOutlets   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model OutletInfo {
+  rowId             String @id @default(auto()) @map("_id") @db.ObjectId
+  bankId            String
+  outletId          String
+  reportingDate     String
+  typeOfOutlet      String
+  outletName        String
+  town              String
+  subCountyCode     String
+  latitude          Float
+  longitude         Float
+  cbkApprovalDate   String
+  outletStatus      String
+  openingDate       String
+  closureDate       String
+  licenseFeePayable Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model CustomerComplaint {
+  rowId            String             @id @default(auto()) @map("_id") @db.ObjectId
+  pspId            String
+  reportingDate    String
+  complaintID      String?
+  code             ComplaintCode
+  gender           ComplainantGender
+  frequency        ComplaintFrequency
+  name             String
+  age              String?
+  contact          String
+  subCounty        String?
+  education        String?
+  otherDetails     String?
+  agentId          String?
+  dateOfOccurrence String
+  dateReported     String
+  dateResolved     String?
+  remedialStatus   StatusCode
+  amountLost       Float
+  amountRecovered  Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Tariff {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  reportingDate String
+  tariff        Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model SystemInterruption {
+  rowId                        String                       @id @default(auto()) @map("_id") @db.ObjectId
+  pspId                        String
+  reportingDate                String
+  subCountyCode                String
+  systemOwnerFlag              String
+  thirdPartyOwnedCategory      ThirdPartyOwnedCategory?
+  thirdPartyName               String?
+  productType                  String
+  systemUnavailabilityTypeCode SystemUnavailabilityTypeCode
+  thirdPartySystemAffected     String?
+  systemInterruptionCauseCode  String
+  severityInterruptionCode     DisruptionTypeCode
+  recoveryTimeCode             String
+  remedialStatusCode           RemedialStatus
+  systemUptime                 Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+enum TrustFundPlacement {
+  TFP01
+  TFP02
+  TFP03
+  TFP04
+  TFP05
+  TFP06
+  TFP99
+}
+
+enum RecoveryStatus {
+  Complete
+  Incomplete
+}
+
+enum Gender {
+  M
+  F
+}
+
+enum DirectorType {
+  EXECUTIVE
+  NONEXECUTIVE
+}
+
+enum ShareholderGender {
+  C
+  M
+  F
+}
+
+enum ShareholderType {
+  Corporate
+  Individual
+}
+
+enum ComplaintCode {
+  CCS01
+  CCS02
+  CCS03
+  CCS04
+  CCS05
+  CCS06
+  CCS07
+  CCS08
+  CCS09
+  CCS10
+  CCS11
+  CCS12
+  CCS13
+  CCS14
+  CCS15
+  CCS16
+  CCS99
+}
+
+enum ComplainantGender {
+  C
+  F
+  M
+  O
+}
+
+enum ComplaintFrequency {
+  CFQC01
+  CFQC02
+  CFQC03
+  CFQC04
+  CFQC05
+  CFQC99
+}
+
+enum StatusCode {
+  REMCST01
+  REMCST02
+  REMCST99
+}
+
+enum EducactionLevel {
+  ELAC01
+  ELAC02
+  ELAC03
+  ELAC04
+  ELAC05
+  ELAC06
+  ELAC07
+  ELAC08
+  ELAC99
+}
+
+enum ThirdPartyOwnedCategory {
+  TPOCC01
+  TPOCC02
+  TPOCC03
+  TPOCC04
+  TPOCC05
+  TPOCC06
+  TPOCC99
+}
+
+enum SystemUnavailabilityTypeCode {
+  SSTC01
+  SSTC02
+  SSTC03
+  SSTC99
+}
+
+enum DisruptionTypeCode {
+  DT01
+  DT02
+  DT03
+  DT04
+}
+
+enum RemedialStatus {
+  REMCST01
+  REMCST02
+  REMCST03
+  REMCST99
+}
+
+enum UserType {
+  trust
+  security
+  cyber
+  legal
+  am
+  superAdmin
+  imt
+  cx
+  marketing
+  nps
+}
+
+enum SectorCode {
+  P2B05
+  P2B06
+  P2B07
+  P2B08
+  P2B09
+  P2B10
+  P2B11
+  P2B12
+  P2B13
+  P2B14
+  P2B15
+  P2B16
+  P2B17
+  P2B18
+  P2B19
+  P2B20
+  P2B21
+  P2B22
+  P2B23
+  P2B24
+  P2B99
+}

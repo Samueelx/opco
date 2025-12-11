@@ -1,0 +1,2 @@
+"pspId,reportingDate,subCountyCode,agentId,denominationCode,serialNumber,depositor'sName,teller'sName,dateConfiscated,dateSubmittedToCBK,remarks,numberOfPieces"
+"PSP123,2023-06-01,SC001,AGT001,1000,SN12345678,John Doe,Jane Smith,2023-06-01,2023-06-02,Suspicious bill,5"

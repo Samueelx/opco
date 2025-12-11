@@ -27,6 +27,10 @@ export { default as ForeignExchangePosition } from "./BSD/ForeignExchangePositio
 export { default as OutletInfo } from "./BSD/OutletInfo";
 export { default as ShareholdersInfo } from "./BSD/ShareholdersInfo";
 
+export { default as SuspiciousTransactions } from "./STR/SuspiciousTransactions";
+
+
+
 export const navLinks = [
   {
     id: 4,
@@ -165,5 +169,29 @@ export const navLinks = [
     userType: "nps",
     category: "psp",
     frequency: "monthly"
+  },
+    {
+    id: 31,
+    title: "Suspicious Transactions",
+    link: "/suspicious-transactions",
+    userType: "compliance", // adjust to your user type
+    category: "str",
+    frequency: "daily" // adjust as needed
+  },
+  {
+    id: 32,
+    title: "UN Sanctioned List",
+    link: "/un-sanctioned-list",
+    userType: "compliance",
+    category: "str",
+    frequency: "monthly" // adjust as needed
+  },
+  {
+    id: 33,
+    title: "General Information",
+    link: "/general-information",
+    userType: "compliance",
+    category: "str"
+    // no frequency if it's not periodic
   },
 ];

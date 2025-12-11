@@ -102,3 +102,12 @@ export { default as UploadTrustAccPlacementModal } from "./modals/create/CSV-Upl
 export { default as UploadTrusteesModal } from "./modals/create/CSV-Uploads/UploadTrusteesModal";
 export { default as UploadTariffsModal } from "./modals/create/CSV-Uploads/UploadTariffsModal";
 export { default as UploadPSPScheduleOfSystemStabilityAndInterruptionModal } from "./modals/create/CSV-Uploads/UploadPSPScheduleOfSystemStabilityAndInterruptionModal";
+
+export { default as AddSuspiciousTransactionModal } from "./modals/create/STR/AddSuspiciousTransactionModal";
+
+// STR Table Components
+// export { default as SuspiciousTransactionsHeader } from "./table/headers/STR/SuspiciousTransactionsHeader";
+// export { default as SuspiciousTransactionsRow } from "./table/rows/STR/SuspiciousTransactionsRow";
+export { default as SuspiciousTransactionsHeader} from "./table/headers/STR/SuspiciousTransactionsHeader ";
+export { default as SuspiciousTransactionsRow} from "./table/rows/STR/SuspiciousTransactionsRow ";
+export { default as UploadSuspiciousTransactionsModal } from "./modals/create/CSV-Uploads/UploadSuspiciousTransactionsModal";

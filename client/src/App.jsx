@@ -28,6 +28,7 @@ import {
   TrustAccountPlacement,
   UserApprovals,
   VerificationNotification,
+  SuspiciousTransactions,
 } from "./pages";
 import {
   cybersecurityIncidentLoader,
@@ -173,6 +174,10 @@ function App() {
           path: "/psp-schedule-of-system-stability-and-service-interruption",
           element: <PSPScheduleOfSystemStabilityAndInterruption />,
           loader: pSPScheduleOfSystemStabilityAndInterruptionLoader,
+        },
+        {
+          path: "/suspicious-transactions",
+          element: <SuspiciousTransactions />,
         },
       ],
     },

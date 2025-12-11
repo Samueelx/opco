@@ -5,11 +5,16 @@ import prisma from "../lib/prisma.js";
 
 export const signup = async (req, res) => {
   const { email, password, username, userType } = req.body;
-
+  
+  console.log('📥 Received signup data:', { email, username, userType }); // Don't log password
+  
   try {
     // hash password
     const hashedPassword = await bcrypt.hash(password, 12);
-
+    
+    console.log('🔐 Password hashed successfully');
+    console.log('💾 Attempting to create user...');
+    
     const newUser = await prisma.user.create({
       data: {
         email,
@@ -18,14 +23,25 @@ export const signup = async (req, res) => {
         password: hashedPassword,
       },
     });
-
+    
+    console.log('✅ User created:', newUser.id);
+    
     const { password: userPassword, ...userInfo } = newUser;
-
     res
       .status(201)
       .json({ message: "User created successfully!", userData: userInfo });
   } catch (error) {
-    res.status(500).json({ message: "Failed to create user!", error });
+    console.error('❌ Full error:', error);
+    console.error('❌ Error code:', error.code);
+    console.error('❌ Error meta:', error.meta);
+    res.status(500).json({ 
+      message: "Failed to create user!", 
+      error: {
+        code: error.code,
+        message: error.message,
+        meta: error.meta
+      }
+    });
   }
 };
 

@@ -125,8 +125,8 @@ export default function AddSuspiciousTransactionModal({
                           className="outline-none border p-1.5 rounded"
                         >
                           <option value="">Select...</option>
-                          <option value="Suspicious">Suspicious</option>
-                          <option value="Cash">Cash</option>
+                          <option value="MLCFTFC01">Suspicious</option>
+                          <option value="MLCFTFC02">Cash</option>
                         </select>
                       </div>
 

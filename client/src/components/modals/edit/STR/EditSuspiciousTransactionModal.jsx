@@ -132,8 +132,8 @@ export default function EditSuspiciousTransactionModal({
                           className="outline-none border p-1.5 rounded"
                         >
                           <option value="">Select...</option>
-                          <option value="Suspicious">Suspicious</option>
-                          <option value="Cash">Cash</option>
+                          <option value="MLCFTFC01">Suspicious</option>
+                          <option value="MLCFTFC02">Cash</option>
                         </select>
                       </div>
 
@@ -210,7 +210,7 @@ export default function EditSuspiciousTransactionModal({
                           htmlFor="totalValueOfTransactionsAbove15000"
                           className="text-nowrap font-semibold text-sm"
                         >
-                          TOTAL VALUE &gt; USD 15,000 (KSH'000)
+                          TOTAL VALUE &gt; USD 15,000 (KSH&apos;000)
                         </label>
                         <input
                           type="number"

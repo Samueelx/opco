@@ -120,6 +120,16 @@ model SuspiciousTransaction {
   updatedAt                                  DateTime @default(now())
 }
 
+model GeneralInformation {
+  rowId                                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  pspId                                   String
+  reportingDate                           String
+  totalNumberOfStaffForTheOrganization    Int
+  totalNumberSupportingComplainceAMLTFPF  Int
+  createdAt                               DateTime @default(now())
+  updatedAt                               DateTime @default(now())
+}
+
 model Director {
   rowId                  String       @id @default(auto()) @map("_id") @db.ObjectId
   pspId                  String

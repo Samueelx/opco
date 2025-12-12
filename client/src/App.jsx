@@ -1,4 +1,4 @@
-import {Suspense} from 'react'
+// import {Suspense} from 'react'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import {
@@ -29,6 +29,7 @@ import {
   UserApprovals,
   VerificationNotification,
   SuspiciousTransactions,
+  GeneralInformation,
 } from "./pages";
 import {
   cybersecurityIncidentLoader,
@@ -179,6 +180,10 @@ function App() {
           path: "/suspicious-transactions",
           element: <SuspiciousTransactions />,
         },
+        {
+          path: "/general-information",
+          element: <GeneralInformation />,
+        }
       ],
     },
   ]);

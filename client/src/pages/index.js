@@ -28,6 +28,7 @@ export { default as OutletInfo } from "./BSD/OutletInfo";
 export { default as ShareholdersInfo } from "./BSD/ShareholdersInfo";
 
 export { default as SuspiciousTransactions } from "./STR/SuspiciousTransactions";
+export {default as GeneralInformation} from "./STR/GeneralInformation";
 
 
 

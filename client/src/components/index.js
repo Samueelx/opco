@@ -106,8 +106,10 @@ export { default as UploadPSPScheduleOfSystemStabilityAndInterruptionModal } fro
 export { default as AddSuspiciousTransactionModal } from "./modals/create/STR/AddSuspiciousTransactionModal";
 
 // STR Table Components
-// export { default as SuspiciousTransactionsHeader } from "./table/headers/STR/SuspiciousTransactionsHeader";
-// export { default as SuspiciousTransactionsRow } from "./table/rows/STR/SuspiciousTransactionsRow";
 export { default as SuspiciousTransactionsHeader} from "./table/headers/STR/SuspiciousTransactionsHeader ";
 export { default as SuspiciousTransactionsRow} from "./table/rows/STR/SuspiciousTransactionsRow ";
 export { default as UploadSuspiciousTransactionsModal } from "./modals/create/CSV-Uploads/UploadSuspiciousTransactionsModal";
+export { default as AddGeneralInformationModal } from "./modals/create/STR/AddGeneralInformationModal";
+export { default as UploadGeneralInformationModal } from "./modals/create/CSV-Uploads/UploadGeneralInformationModal";
+export { default as GeneralInformationHeader } from "./table/headers/STR/GeneralInformationHeader";
+export { default as GeneralInformationRow } from "./table/rows/STR/GeneralInformationRow";

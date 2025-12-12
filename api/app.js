@@ -23,6 +23,7 @@ import {
   trustAccountRouter,
   trusteesRouter,
   userRouter,
+  suspiciousTransactionsRouter,
 } from "./routes/index.js";
 
 const app = express();
@@ -75,6 +76,9 @@ app.use(
 );
 
 app.use("/api/band-codes", bandCodesRouter);
+
+// Suspicious Transactions
+app.use("/api/suspicious-transactions", suspiciousTransactionsRouter);
 
 const PORT = 8800 || 8801
 

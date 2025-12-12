@@ -106,6 +106,20 @@ model CybersecurityIncident {
   updatedAt DateTime @default(now())
 }
 
+model SuspiciousTransaction {
+  rowId                                      String   @id @default(auto()) @map("_id") @db.ObjectId
+  pspId                                      String
+  reportingDate                              String
+  transactionFlag                            TransactionFlag
+  numberOfMLRelatedSTRsReported              Int
+  numberOfTFRelatedSTRsReported              Int
+  numberOfPFRelatedSTRsReported              Int
+  numberOfTransactionsAbove15000             Int
+  totalValueOfTransactionsAbove15000         Float
+  createdAt                                  DateTime @default(now())
+  updatedAt                                  DateTime @default(now())
+}
+
 model Director {
   rowId                  String       @id @default(auto()) @map("_id") @db.ObjectId
   pspId                  String
@@ -488,6 +502,11 @@ enum RemedialStatus {
   REMCST02
   REMCST03
   REMCST99
+}
+
+enum TransactionFlag {
+  MLCFTFC01  // Suspicious
+  MLCFTFC02  // Cash
 }
 
 enum UserType {

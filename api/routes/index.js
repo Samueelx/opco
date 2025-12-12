@@ -18,3 +18,4 @@ export { default as trustAccountRouter } from "./trustAccount.route.js";
 export { default as trusteesRouter } from "./trustees.route.js";
 export { default as userRouter } from "./user.route.js";
 export { default as scheduleOfSystemInterruptionRouter } from "./scheduleOfSystemInterruption.route.js";
+export { default as suspiciousTransactionsRouter } from "./suspiciousTransactions.route.js";

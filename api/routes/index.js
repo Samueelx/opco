@@ -20,3 +20,4 @@ export { default as userRouter } from "./user.route.js";
 export { default as scheduleOfSystemInterruptionRouter } from "./scheduleOfSystemInterruption.route.js";
 export { default as suspiciousTransactionsRouter } from "./suspiciousTransactions.route.js";
 export { default as generalInformationRouter } from "./generalInformation.route.js";
+export { default as unSanctionsListRouter } from "./unSanctionsList.route.js";

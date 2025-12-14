@@ -25,6 +25,7 @@ import {
   userRouter,
   suspiciousTransactionsRouter,
   generalInformationRouter,
+  unSanctionsListRouter,
 } from "./routes/index.js";
 
 const app = express();
@@ -81,6 +82,7 @@ app.use("/api/band-codes", bandCodesRouter);
 // Suspicious Transactions
 app.use("/api/suspicious-transactions", suspiciousTransactionsRouter);
 app.use("/api/general-information", generalInformationRouter);
+app.use("/api/un-sanctions-list", unSanctionsListRouter);
 
 const PORT = 8800 || 8801
 

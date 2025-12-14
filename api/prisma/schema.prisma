@@ -130,6 +130,23 @@ model GeneralInformation {
   updatedAt                               DateTime @default(now())
 }
 
+model UNSanctionsList {
+  rowId                           String   @id @default(auto()) @map("_id") @db.ObjectId
+  pspId                           String
+  reportingDate                   String
+  typeOfTransaction               TransactionType
+  typeOfAccountInvolved           AccountType
+  nameOfPersonListedInUNSCList    String
+  accountName                     String
+  accountNumber                   String
+  nameOfFinancialInstitution      String
+  financialInstitutionsInvolved   String
+  countriesInvolvedInTransaction  String
+  amount                          Float
+  createdAt                       DateTime @default(now())
+  updatedAt                       DateTime @default(now())
+}
+
 model Director {
   rowId                  String       @id @default(auto()) @map("_id") @db.ObjectId
   pspId                  String
@@ -554,4 +571,17 @@ enum SectorCode {
   P2B23
   P2B24
   P2B99
+}
+
+enum TransactionType {
+  MLCFTTT01  // Deposit
+  MLCFTTT02  // Withdrawal
+  MLCFTTT03  // Transfers
+  MLCFTTT04  // Any other
+}
+
+enum AccountType {
+  MLCFTATC01  // Bank
+  MLCFTATC02  // Mobile
+  MLCFTATC03  // Any other
 }

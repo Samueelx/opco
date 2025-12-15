@@ -30,6 +30,7 @@ import {
   VerificationNotification,
   SuspiciousTransactions,
   GeneralInformation,
+  UNSanctionedList,
 } from "./pages";
 import {
   cybersecurityIncidentLoader,
@@ -183,7 +184,11 @@ function App() {
         {
           path: "/general-information",
           element: <GeneralInformation />,
-        }
+        },
+        {
+          path: "/un-sanctioned-list",
+          element: <UNSanctionedList />,
+        },
       ],
     },
   ]);

@@ -29,6 +29,7 @@ export { default as ShareholdersInfo } from "./BSD/ShareholdersInfo";
 
 export { default as SuspiciousTransactions } from "./STR/SuspiciousTransactions";
 export {default as GeneralInformation} from "./STR/GeneralInformation";
+export {default as UNSanctionedList} from "./STR/UNSanctionedList";
 
 
 

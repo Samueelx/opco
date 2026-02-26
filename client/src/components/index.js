@@ -117,3 +117,4 @@ export { default as AddUNSanctionsListModal } from "./modals/create/STR/AddUNSan
 export { default as UploadUNSanctionsListModal } from "./modals/create/CSV-Uploads/UploadUNSanctionsListModal";
 export { default as UNSanctionsListHeader } from "./table/headers/STR/UNSanctionsListHeader";
 export { default as UNSanctionsListRow } from "./table/rows/STR/UNSanctionsListRow";
+export { default as AddCustomerAnalysisModal } from "./modals/create/STR/AddCustomerAnalysisModal";

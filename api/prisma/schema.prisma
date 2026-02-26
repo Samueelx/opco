@@ -585,3 +585,46 @@ enum AccountType {
   MLCFTATC02  // Mobile
   MLCFTATC03  // Any other
 }
+
+model CustomerAnalysis {
+  rowId                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  pspId                 String
+  reportingDate         String
+  customerType          CustomerTypeCode
+  customerCategory      CustomerCategoryCode
+  transactionType       TransactionType
+  numberOfCustomers     Int
+  numberOfTransactions  Int
+  valueOfTransactions   Float
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @default(now())
+}
+
+enum CustomerTypeCode {
+  MLCFTCTC01 // Individual
+  MLCFTCT02  // Corporate
+  MLCFTCT03  // Merchants
+}
+
+enum CustomerCategoryCode {
+  MLCFTCCO1  // Resident
+  MLCFTCCO2  // Non Resident
+  MLCFTCCO3  // Domestic PEPS
+  MLCFTCCO4  // Foreign PEPS
+  MLCFTCCO5  // Other High Risks
+  MLCFTCCO6  // Total legal entities
+  MLCFTCCO7  // NPOs
+  MLCFTCCO8  // NPOs at Risk
+  MLCFTCCO9  // Entities (Associated with PEPs-Domestic)
+  MLCFTCCO10 // Entities (Associated with PEPs-Foreign)
+  MLCFTCCO11 // Trust/Charities
+  MLCFTCCO12 // Petroleum
+  MLCFTCCO13 // Real Estate
+  MLCFTCCO14 // Dealers in precious Stones
+  MLCFTCCO15 // Legal and Profession Services
+  MLCFTCCO16 // Payments Service Providers
+  MLCFTCCO17 // Virtual Assets Providers
+  MLCFTCCO18 // Motor Vehicle Dealers
+  MLCFTCCO19 // Other High risk customer
+  MLCFTCCO20 // Merchants
+}

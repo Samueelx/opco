@@ -30,6 +30,7 @@ export { default as ShareholdersInfo } from "./BSD/ShareholdersInfo";
 export { default as SuspiciousTransactions } from "./STR/SuspiciousTransactions";
 export {default as GeneralInformation} from "./STR/GeneralInformation";
 export {default as UNSanctionedList} from "./STR/UNSanctionedList";
+export {default as CustomerAnalysis} from "./STR/CustomerAnalysis";
 
 
 
@@ -194,6 +195,13 @@ export const navLinks = [
     link: "/general-information",
     userType: "compliance",
     category: "str"
-    // no frequency if it's not periodic
+  },
+  {
+    id: 34,
+    title: "Customer Analysis",
+    link: "/customer-analysis",
+    userType: "compliance",
+    category: "str",
+    frequency: "Quarterly"
   },
 ];

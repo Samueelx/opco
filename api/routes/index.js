@@ -21,3 +21,4 @@ export { default as scheduleOfSystemInterruptionRouter } from "./scheduleOfSyste
 export { default as suspiciousTransactionsRouter } from "./suspiciousTransactions.route.js";
 export { default as generalInformationRouter } from "./generalInformation.route.js";
 export { default as unSanctionsListRouter } from "./unSanctionsList.route.js";
+export { default as customerAnalysisRouter } from "./customerAnalysis.route.js";

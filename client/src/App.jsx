@@ -31,6 +31,7 @@ import {
   SuspiciousTransactions,
   GeneralInformation,
   UNSanctionedList,
+  CustomerAnalysis,
 } from "./pages";
 import {
   cybersecurityIncidentLoader,
@@ -188,6 +189,10 @@ function App() {
         {
           path: "/un-sanctioned-list",
           element: <UNSanctionedList />,
+        },
+        {
+          path: "/customer-analysis",
+          element: <CustomerAnalysis />,
         },
       ],
     },

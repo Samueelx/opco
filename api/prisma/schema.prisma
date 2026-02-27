@@ -628,3 +628,64 @@ enum CustomerCategoryCode {
   MLCFTCCO19 // Other High risk customer
   MLCFTCCO20 // Merchants
 }
+
+model GeoLocationBorder {
+  rowId                String          @id @default(auto()) @map("_id") @db.ObjectId
+  pspId                String
+  reportingDate        String
+  borderPoint          BorderPointCode
+  agentType            AgentTypeCode
+  transactionType      TransactionType
+  numberOfTransactions Int
+  valueOfTransactions  Float
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @default(now())
+}
+
+enum BorderPointCode {
+  MLCFTBC01 // Land Borders
+  MLCFTBC02 // Mandera (closed)
+  MLCFTBC03 // Liboi (closed)
+  MLCFTBC04 // Kiunga (closed)
+  MLCFTBC05 // Lunga-lunga OSBPs
+  MLCFTBC06 // Taveta OSBPs
+  MLCFTBC07 // Loitokotok
+  MLCFTBC08 // Namanga OSBPs
+  MLCFTBC09 // Isebania OSBPs
+  MLCFTBC10 // Sand river gate (closed)
+  MLCFTBC11 // Muhuru-bay
+  MLCFTBC12 // Malaba OSBPs
+  MLCFTBC13 // Busia OSBPs
+  MLCFTBC14 // Lwakhakha
+  MLCFTBC15 // Suam
+  MLCFTBC16 // Moyale OSBPs
+  MLCFTBC17 // Nadapal
+  MLCFTBC18 // Maritime Borders
+  MLCFTBC19 // Kilindini
+  MLCFTBC20 // Kilifi
+  MLCFTBC21 // Shimoni
+  MLCFTBC22 // Lamu
+  MLCFTBC23 // Kisumu pier
+  MLCFTBC24 // Mbita
+  MLCFTBC25 // Ngomeni (closed)
+  MLCFTBC26 // Vanga
+  MLCFTBC27 // Oldport
+  MLCFTBC28 // Malindi
+  MLCFTBC29 // Air Borders
+  MLCFTBC30 // Jomo Kenyatta International Airport
+  MLCFTBC31 // Mombasa International Airport
+  MLCFTBC32 // Kisumu International Airport
+  MLCFTBC33 // Malindi Airport
+  MLCFTBC34 // Eldoret International Airport
+  MLCFTBC35 // Wilson Airport
+  MLCFTBC36 // Wajir Airport
+  MLCFTBC37 // Lokichogio
+  MLCFTBC38 // Isiolo airport
+  MLCFTBC39 // Other
+}
+
+enum AgentTypeCode {
+  MLCFTAG01 // Super Agent
+  MLCFTAG02 // Agent
+}
+

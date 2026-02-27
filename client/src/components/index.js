@@ -118,3 +118,4 @@ export { default as UploadUNSanctionsListModal } from "./modals/create/CSV-Uploa
 export { default as UNSanctionsListHeader } from "./table/headers/STR/UNSanctionsListHeader";
 export { default as UNSanctionsListRow } from "./table/rows/STR/UNSanctionsListRow";
 export { default as AddCustomerAnalysisModal } from "./modals/create/STR/AddCustomerAnalysisModal";
+export { default as AddGeoLocationBorderModal } from "./modals/create/STR/AddGeoLocationBorderModal";

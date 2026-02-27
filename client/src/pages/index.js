@@ -31,6 +31,7 @@ export { default as SuspiciousTransactions } from "./STR/SuspiciousTransactions"
 export {default as GeneralInformation} from "./STR/GeneralInformation";
 export {default as UNSanctionedList} from "./STR/UNSanctionedList";
 export {default as CustomerAnalysis} from "./STR/CustomerAnalysis";
+export {default as GeoLocationBorder} from "./STR/GeoLocationBorder";
 
 
 
@@ -200,6 +201,14 @@ export const navLinks = [
     id: 34,
     title: "Customer Analysis",
     link: "/customer-analysis",
+    userType: "compliance",
+    category: "str",
+    frequency: "Quarterly"
+  },
+  {
+    id: 35,
+    title: "Geographical Location Analysis (Border)",
+    link: "/geo-location-border",
     userType: "compliance",
     category: "str",
     frequency: "Quarterly"

@@ -27,6 +27,7 @@ import {
   generalInformationRouter,
   unSanctionsListRouter,
   customerAnalysisRouter,
+  geoLocationBorderRouter,
 } from "./routes/index.js";
 
 const app = express();
@@ -85,6 +86,7 @@ app.use("/api/suspicious-transactions", suspiciousTransactionsRouter);
 app.use("/api/general-information", generalInformationRouter);
 app.use("/api/un-sanctions-list", unSanctionsListRouter);
 app.use("/api/customer-analysis", customerAnalysisRouter);
+app.use("/api/geo-location-border", geoLocationBorderRouter);
 
 const PORT = 8800 || 8801
 

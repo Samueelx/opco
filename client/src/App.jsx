@@ -32,6 +32,7 @@ import {
   GeneralInformation,
   UNSanctionedList,
   CustomerAnalysis,
+  GeoLocationBorder,
 } from "./pages";
 import {
   cybersecurityIncidentLoader,
@@ -193,6 +194,10 @@ function App() {
         {
           path: "/customer-analysis",
           element: <CustomerAnalysis />,
+        },
+        {
+          path: "/geo-location-border",
+          element: <GeoLocationBorder />,
         },
       ],
     },

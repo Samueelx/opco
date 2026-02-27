@@ -33,6 +33,7 @@ import {
   UNSanctionedList,
   CustomerAnalysis,
   GeoLocationBorder,
+  GeoLocationCountry,
 } from "./pages";
 import {
   cybersecurityIncidentLoader,
@@ -198,6 +199,10 @@ function App() {
         {
           path: "/geo-location-border",
           element: <GeoLocationBorder />,
+        },
+        {
+          path: "/geo-location-country",
+          element: <GeoLocationCountry />,
         },
       ],
     },

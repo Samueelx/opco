@@ -689,3 +689,48 @@ enum AgentTypeCode {
   MLCFTAG02 // Agent
 }
 
+model GeoLocationCountry {
+  rowId                    String                @id @default(auto()) @map("_id") @db.ObjectId
+  pspId                    String
+  reportingDate            String
+  countryOfInterest        CountryOfInterestCode
+  numberOfInflows          Int
+  valueOfInflows           Float
+  numberOfOutflows         Int
+  valueOfOutflows          Float
+  createdAt                DateTime              @default(now())
+  updatedAt                DateTime              @default(now())
+}
+
+enum CountryOfInterestCode {
+  MLCFTCRC01 // UN Sanctioned Countries-North Korea
+  MLCFTCRC02 // UN Sanctioned Countries-Iran
+  MLCFTCRC03 // UN Sanctioned Countries-Mali
+  MLCFTCRC04 // UN Sanctioned Countries-South Sudan
+  MLCFTCRC05 // UN Sanctioned Countries-Central African Republic
+  MLCFTCRC06 // UN Sanctioned Countries-Yemen
+  MLCFTCRC07 // UN Sanctioned Countries-Guinea-Bissau
+  MLCFTCRC08 // UN Sanctioned Countries-Libya
+  MLCFTCRC09 // UN Sanctioned Countries-Eritrea
+  MLCFTCRC10 // UN Sanctioned Countries-Lebanon
+  MLCFTCRC11 // UN Sanctioned Countries-Democratic Republic of the Congo
+  MLCFTCRC12 // UN Sanctioned Countries-Sudan
+  MLCFTCRC13 // UN Sanctioned Countries-Somalia
+  MLCFTCRC14 // UN Sanctioned Countries-Iraq
+  MLCFTCRC15 // Jurisdictions listed by FATF as high-risk/non-cooperative-Iran
+  MLCFTCRC16 // Jurisdictions listed by FATF as high-risk/non-cooperative-Democratic People's Republic of Korea
+  MLCFTCRC17 // Designated Countries L.N 200 of 2015-Somalia
+  MLCFTCRC18 // Designated Countries L.N 200 of 2015-Syria
+  MLCFTCRC19 // Designated Countries L.N 200 of 2015-Yemeni
+  MLCFTCRC20 // Designated Countries L.N 200 of 2015-Libya
+  MLCFTCRC21 // Designated Countries L.N 200 of 2015-Iraq
+  MLCFTCRC22 // Designated Countries L.N 200 of 2015-Afghanistan
+  MLCFTCRC23 // Jurisdictions under Increased Monitoring by FATF-Grey list
+  MLCFTCRC24 // Other jurisdictions assessed as higher ML/TF/PF risk by the institution
+  MLCFTCRC25 // Regional countries-Tanzania
+  MLCFTCRC26 // Regional countries-South Africa
+  MLCFTCRC27 // Regional countries-Uganda
+  MLCFTCRC28 // Regional countries-Sudan
+  MLCFTCRC29 // Regional countries-Mozambique
+  MLCFTCRC30 // Any Other
+}

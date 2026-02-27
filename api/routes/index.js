@@ -23,3 +23,4 @@ export { default as generalInformationRouter } from "./generalInformation.route.
 export { default as unSanctionsListRouter } from "./unSanctionsList.route.js";
 export { default as customerAnalysisRouter } from "./customerAnalysis.route.js";
 export { default as geoLocationBorderRouter } from "./geoLocationBorder.route.js";
+export { default as geoLocationCountryRouter } from "./geoLocationCountry.route.js";

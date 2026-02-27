@@ -32,6 +32,7 @@ export {default as GeneralInformation} from "./STR/GeneralInformation";
 export {default as UNSanctionedList} from "./STR/UNSanctionedList";
 export {default as CustomerAnalysis} from "./STR/CustomerAnalysis";
 export {default as GeoLocationBorder} from "./STR/GeoLocationBorder";
+export {default as GeoLocationCountry} from "./STR/GeoLocationCountry";
 
 
 
@@ -209,6 +210,14 @@ export const navLinks = [
     id: 35,
     title: "Geographical Location Analysis (Border)",
     link: "/geo-location-border",
+    userType: "compliance",
+    category: "str",
+    frequency: "Quarterly"
+  },
+  {
+    id: 36,
+    title: "Geographical Location Analysis (Country)",
+    link: "/geo-location-country",
     userType: "compliance",
     category: "str",
     frequency: "Quarterly"

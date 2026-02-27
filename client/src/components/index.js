@@ -119,3 +119,4 @@ export { default as UNSanctionsListHeader } from "./table/headers/STR/UNSanction
 export { default as UNSanctionsListRow } from "./table/rows/STR/UNSanctionsListRow";
 export { default as AddCustomerAnalysisModal } from "./modals/create/STR/AddCustomerAnalysisModal";
 export { default as AddGeoLocationBorderModal } from "./modals/create/STR/AddGeoLocationBorderModal";
+export { default as AddGeoLocationCountryModal } from "./modals/create/STR/AddGeoLocationCountryModal";

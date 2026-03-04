@@ -222,42 +222,54 @@ export const createTrusteeFromCSV = async (req, res) => {
         rows.push(row);
       })
       .on("end", async () => {
-        for (const row of rows) {
-          const newSplit = Object.values(row)[0].split(",");
+        try {
+          const validRows = rows.filter(row => {
+            const vals = Object.values(row);
+            return vals.length > 0 && typeof vals[0] === 'string' && vals[0].trim() !== '';
+          });
 
-          try {
-            await prisma.trustee.create({
-              data: {
-                pspId: newSplit[0],
-                reportingDate: newSplit[1],
-                trustCompanyName: newSplit[2],
-                directorsOfTrustCo: newSplit[3],
-                trusteeNames: newSplit[4],
-                trustGender: newSplit[5],
-                dateOfBirth: newSplit[6],
-                nationalityOfTrustee: newSplit[7],
-                residenceOfShareholder: newSplit[8],
-                idNumber: newSplit[9],
-                kraPin: newSplit[10],
-                contact: newSplit[11],
-                academicQualifications: newSplit[12],
-                otherTrusteeships: newSplit[13],
-                disclosureDetails: newSplit[14],
-                shareholderOfTrust: newSplit[15],
-                percentageOfShareholding: parseAmount(newSplit[16]),
-              },
-            });
-          } catch (error) {
-            console.error(
-              `Failed to create a Trustee entry for row: ${JSON.stringify(
-                row
-              )}`,
-              error
-            );
+          for (const row of validRows) {
+            const newSplit = Object.values(row)[0].split(",");
+
+            try {
+              await prisma.trustee.create({
+                data: {
+                  pspId: newSplit[0],
+                  reportingDate: newSplit[1],
+                  trustCompanyName: newSplit[2],
+                  directorsOfTrustCo: newSplit[3],
+                  trusteeNames: newSplit[4],
+                  trustGender: newSplit[5],
+                  dateOfBirth: newSplit[6],
+                  nationalityOfTrustee: newSplit[7],
+                  residenceOfShareholder: newSplit[8],
+                  idNumber: newSplit[9],
+                  kraPin: newSplit[10],
+                  contact: newSplit[11],
+                  academicQualifications: newSplit[12],
+                  otherTrusteeships: newSplit[13],
+                  disclosureDetails: newSplit[14],
+                  shareholderOfTrust: newSplit[15],
+                  percentageOfShareholding: parseAmount(newSplit[16]),
+                },
+              });
+            } catch (error) {
+              console.error(
+                `Failed to create a Trustee entry for row: ${JSON.stringify(
+                  row
+                )}`,
+                error
+              );
+            }
+          }
+
+          res.status(201).json({ message: "CSV file processed successfully" });
+        } catch (error) {
+          console.error("Critical error in processing rows:", error);
+          if (!res.headersSent) {
+            res.status(500).json({ message: "Failed during database insertion process.", error: error.message });
           }
         }
-
-        res.status(201).json({ message: "CSV file processed successfully" });
       })
       .on("error", (error) => {
         console.error("Error reading CSV file:", error);

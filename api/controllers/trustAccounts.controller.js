@@ -209,63 +209,75 @@ export const createTrustAccountFromCSV = async (req, res) => {
         rows.push(row);
       })
       .on("end", async () => {
-        // Create an array of Promises, one for each database insertion attempt
-        const createPromises = rows.map(async (row) => {
-          const newSplit = Object.values(row)[0].split(",");
-          try {
-            await prisma.trustAcc.create({
-              data: {
-                pspId: newSplit[0],
-                bankId: newSplit[1],
-                reportingDate: newSplit[2],
-                bankAccNumber: newSplit[3],
-                trustAccDrTypeCode: newSplit[4],
-                orgReceivingDonation: newSplit[5],
-                sectorCode: newSplit[6],
-                trustAccIntUtilizedDetails: newSplit[7],
-                openingBal: parseAmount(newSplit[8]),
-                principalAmount: parseAmount(newSplit[9]),
-                interestEarned: parseAmount(newSplit[10]),
-                closingBal: parseAmount(newSplit[11]) + parseAmount(newSplit[12]),
-                trustAccInterestUtilized: parseAmount(newSplit[13]),
-              },
-            });
-            console.log("File data uploaded successfully for a row");
-            return { status: 'success', row: row };
-          } catch (error) {
-            console.error(
-              `Failed to create a Trust Account entry for row: ${JSON.stringify(
-                row
-              )}`,
-              error
-            );
-            // Return an error status for this specific row instead of throwing entirely
-            return { status: 'error', row: row, error: error.message };
+        try {
+          const validRows = rows.filter(row => {
+            const vals = Object.values(row);
+            return vals.length > 0 && typeof vals[0] === 'string' && vals[0].trim() !== '';
+          });
+
+          // Create an array of Promises, one for each database insertion attempt
+          const createPromises = validRows.map(async (row) => {
+            const newSplit = Object.values(row)[0].split(",");
+            try {
+              await prisma.trustAcc.create({
+                data: {
+                  pspId: newSplit[0],
+                  bankId: newSplit[1],
+                  reportingDate: newSplit[2],
+                  bankAccNumber: newSplit[3],
+                  trustAccDrTypeCode: newSplit[4],
+                  orgReceivingDonation: newSplit[5],
+                  sectorCode: newSplit[6],
+                  trustAccIntUtilizedDetails: newSplit[7],
+                  openingBal: parseAmount(newSplit[8]),
+                  principalAmount: parseAmount(newSplit[9]),
+                  interestEarned: parseAmount(newSplit[10]),
+                  closingBal: parseAmount(newSplit[11]) + parseAmount(newSplit[12]),
+                  trustAccInterestUtilized: parseAmount(newSplit[13]),
+                },
+              });
+              console.log("File data uploaded successfully for a row");
+              return { status: 'success', row: row };
+            } catch (error) {
+              console.error(
+                `Failed to create a Trust Account entry for row: ${JSON.stringify(
+                  row
+                )}`,
+                error
+              );
+              // Return an error status for this specific row instead of throwing entirely
+              return { status: 'error', row: row, error: error.message };
+            }
+          });
+
+          // Wait for ALL promises in the array to settle (either success or failure)
+          const results = await Promise.all(createPromises);
+          console.log("Results here")
+          results.forEach(result => {
+            if (result.status === 'error'){
+              console.error(`[SUMMARY ERROR] Row failed: ${JSON.stringify(result.row)} Reason: ${result.error}`);
+            }
+          });
+
+          // Clean up the uploaded file
+          //fs.unlinkSync(filePath);
+
+          // You can now analyze 'results' to see if any errors occurred
+          const errorsOccurred = results.some(result => result.status === 'error');
+
+          if (errorsOccurred) {
+            // If any single row failed, return a 500 or 400 error status
+            console.log("Errors occured", errorsOccurred);
+            res.status(500).json({ message: "Some rows failed to process during database insertion." });
+          } else {
+            // If all rows succeeded, return 201 success
+            res.status(201).json({ message: "CSV file processed successfully, all rows inserted." });
           }
-        });
-
-        // Wait for ALL promises in the array to settle (either success or failure)
-        const results = await Promise.all(createPromises);
-        console.log("Results here")
-        results.forEach(result => {
-          if (result.status === 'error'){
-            console.error(`[SUMMARY ERROR] Row failed: ${JSON.stringify(result.row)} Reason: ${result.error}`);
+        } catch (error) {
+          console.error("Critical error in processing rows:", error);
+          if (!res.headersSent) {
+            res.status(500).json({ message: "Failed during database insertion process.", error: error.message });
           }
-        });
-
-        // Clean up the uploaded file
-        //fs.unlinkSync(filePath);
-
-        // You can now analyze 'results' to see if any errors occurred
-        const errorsOccurred = results.some(result => result.status === 'error');
-
-        if (errorsOccurred) {
-          // If any single row failed, return a 500 or 400 error status
-          console.log("Errors occured", errorsOccurred);
-          res.status(500).json({ message: "Some rows failed to process during database insertion." });
-        } else {
-          // If all rows succeeded, return 201 success
-          res.status(201).json({ message: "CSV file processed successfully, all rows inserted." });
         }
       })
       .on("error", (error) => {

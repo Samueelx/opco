@@ -186,31 +186,43 @@ export const createTrustAccPlacementFromCSV = async (req, res) => {
         rows.push(row);
       })
       .on("end", async () => {
-        for (const row of rows) {
-          const newSplit = Object.values(row)[0].split(",");
+        try {
+          const validRows = rows.filter(row => {
+            const vals = Object.values(row);
+            return vals.length > 0 && typeof vals[0] === 'string' && vals[0].trim() !== '';
+          });
 
-          try {
-            await prisma.trustAccPlacement.create({
-              data: {
-                pspId: newSplit[0],
-                reportingDate: newSplit[1],
-                trustFundPlacement: newSplit[2],
-                trustFundInvMaturityDate: newSplit[3],
-                catTrustFundInvestedAmt: parseAmount(newSplit[4]),
-                interestAmtPerCat: parseAmount(newSplit[5]),
-              },
-            });
-          } catch (error) {
-            console.error(
-              `Failed to create a Trust Account Placement entry for row: ${JSON.stringify(
-                row
-              )}`,
-              error
-            );
+          for (const row of validRows) {
+            const newSplit = Object.values(row)[0].split(",");
+
+            try {
+              await prisma.trustAccPlacement.create({
+                data: {
+                  pspId: newSplit[0],
+                  reportingDate: newSplit[1],
+                  trustFundPlacement: newSplit[2],
+                  trustFundInvMaturityDate: newSplit[3],
+                  catTrustFundInvestedAmt: parseAmount(newSplit[4]),
+                  interestAmtPerCat: parseAmount(newSplit[5]),
+                },
+              });
+            } catch (error) {
+              console.error(
+                `Failed to create a Trust Account Placement entry for row: ${JSON.stringify(
+                  row
+                )}`,
+                error
+              );
+            }
+          }
+
+          res.status(201).json({ message: "CSV file processed successfully" });
+        } catch (error) {
+          console.error("Critical error in processing rows:", error);
+          if (!res.headersSent) {
+            res.status(500).json({ message: "Failed during database insertion process.", error: error.message });
           }
         }
-
-        res.status(201).json({ message: "CSV file processed successfully" });
       })
       .on("error", (error) => {
         console.error("Error reading CSV file:", error);

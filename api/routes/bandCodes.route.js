@@ -10,8 +10,8 @@ import {
 
 const bandCodesRouter = express.Router();
 
-bandCodesRouter.get("/:id", getBandCode);
 bandCodesRouter.get("/", getBandCodes);
+bandCodesRouter.get("/:id", getBandCode);
 bandCodesRouter.post("/", verifyToken, createBandCodesFromCSV);
 bandCodesRouter.delete('/:id', verifyToken, deleteTariff )
 

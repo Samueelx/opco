@@ -10,13 +10,13 @@ export const getBandCodes = async (req, res) => {
     const userTokenUserType = decodedToken.userType;
 
     if (userTokenUserType !== "marketing" && userTokenUserType !== "superAdmin")
-      return res.status(500).json({ message: "Not Authorized!" });
+      return res.status(403).json({ message: "Not Authorized!" });
 
     const bandCodes = await prisma.tariff.findMany();
     res.status(200).json(bandCodes);
   } catch (error) {
     res.status(500).json({
-      message: "Failed to create a Tariff!",
+      message: "Failed to fetch Tariffs!",
       error,
     });
   }
@@ -32,7 +32,7 @@ export const getBandCode = async (req, res) => {
     const userTokenUserType = decodedToken.userType;
 
     if (userTokenUserType !== "marketing" && userTokenUserType !== "superAdmin")
-      return res.status(500).json({ message: "Not Authorized!" });
+      return res.status(403).json({ message: "Not Authorized!" });
 
     const bandCode = await prisma.tariff.findUnique({
       where: { id },
@@ -96,7 +96,7 @@ export const createBandCodesFromCSV = async (req, res) => {
     const userTokenUserType = decodedToken.userType;
 
     if (userTokenUserType !== "marketing" && userTokenUserType !== "superAdmin")
-      return res.status(500).json({ message: "Not Authorized!" });
+      return res.status(403).json({ message: "Not Authorized!" });
 
     const newTariff = await prisma.tariff.create({
       data: {

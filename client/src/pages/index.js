@@ -179,9 +179,9 @@ export const navLinks = [
     id: 31,
     title: "Suspicious Transactions",
     link: "/suspicious-transactions",
-    userType: "compliance", // adjust to your user type
+    userType: "compliance",
     category: "str",
-    frequency: "daily" // adjust as needed
+    frequency: "Quarterly"
   },
   {
     id: 32,
@@ -189,14 +189,15 @@ export const navLinks = [
     link: "/un-sanctioned-list",
     userType: "compliance",
     category: "str",
-    frequency: "monthly" // adjust as needed
+    frequency: "Quarterly"
   },
   {
     id: 33,
     title: "General Information",
     link: "/general-information",
     userType: "compliance",
-    category: "str"
+    category: "str",
+    frequency: "Quarterly"
   },
   {
     id: 34,

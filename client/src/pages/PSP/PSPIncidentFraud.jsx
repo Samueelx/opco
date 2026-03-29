@@ -23,7 +23,14 @@ const PSPIncidentFraud = () => {
     }
   }, [reportingDate]);
 
-  const fetchTrustAccountsData = async () => {
+  const fetchTrustAccountsData = async (records) => {
+    // If records were passed directly (e.g. from a CSV upload response), use them
+    if (Array.isArray(records) && records.length > 0) {
+      setFraudIncidents(records);
+      return;
+    }
+    // Otherwise fetch by the currently selected reporting date
+    if (!reportingDate) return;
     try {
       const trustAccountsData = await apiRequest.get(
         `/psp-incidents-of-fraud-theft-robbery/reportingdate/${reportingDate}`
@@ -51,7 +58,7 @@ const PSPIncidentFraud = () => {
         </div>
 
         <div className="overflow-x-auto">
-          {fraudIncidents && fraudIncidents.length > 0 && reportingDate !== "" ? <table className="border-collapse w-full mb-10">
+          {fraudIncidents && fraudIncidents.length > 0 ? <table className="border-collapse w-full mb-10">
             <PSPIncidentFraudHeader />
 
             <tbody>

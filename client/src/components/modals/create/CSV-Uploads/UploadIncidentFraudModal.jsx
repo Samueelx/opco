@@ -49,7 +49,8 @@ export default function UploadIncidentFraudModal({
       console.log("CSV file uploaded successfully!", response.data);
       setLoading(false);
       setIsOpen(false);
-      onRecordAdded();
+      // Pass the uploaded records directly to the parent — no follow-up GET needed
+      onRecordAdded(response.data.importedRecords ?? []);
     } catch (error) {
       console.error("Error uploading file: ", error);
       alert("Error uploading file");

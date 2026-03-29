@@ -259,6 +259,7 @@ export const createFraudIncidentFromCSV = async (req, res) => {
 
     const results = [];
     const errors = [];
+    const createdRecords = [];
 
     fs.createReadStream(filePath)
       .pipe(
@@ -282,7 +283,7 @@ export const createFraudIncidentFromCSV = async (req, res) => {
           if (!values[1] || values[1].trim() === "PSP ID") continue;
 
           try {
-            await prisma.fraudIncident.create({
+            const created = await prisma.fraudIncident.create({
               data: {
                 pspId: (values[1] ?? "").trim(),
                 reportingDate: parseIncidentDate(values[2]),
@@ -300,6 +301,7 @@ export const createFraudIncidentFromCSV = async (req, res) => {
                 recoveryDetails: (values[14] ?? "").trim(),
               },
             });
+            createdRecords.push(created);
           } catch (error) {
             console.error(
               `Failed to create a Fraud Incident entry for row: ${JSON.stringify(row)}`,
@@ -311,13 +313,15 @@ export const createFraudIncidentFromCSV = async (req, res) => {
 
         if (errors.length > 0) {
           return res.status(207).json({
-            message: `CSV processed with ${errors.length} error(s) out of ${results.length} row(s).`,
+            message: `CSV processed with ${errors.length} error(s). ${createdRecords.length} record(s) imported successfully.`,
+            importedRecords: createdRecords,
             errors,
           });
         }
 
         res.status(201).json({
-          message: `CSV file processed successfully. ${results.length} record(s) imported.`,
+          message: `CSV file processed successfully. ${createdRecords.length} record(s) imported.`,
+          importedRecords: createdRecords,
         });
       })
       .on("error", (error) => {

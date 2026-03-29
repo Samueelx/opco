@@ -34,8 +34,8 @@ fraudIncidentRouter.post(
 );
 
 fraudIncidentRouter.get("/", verifyToken, getFraudIncidents);
-fraudIncidentRouter.get("/:rowId", verifyToken, getFraudIncident);
 fraudIncidentRouter.get("/reportingdate/:reportingDate", verifyToken, getFraudIncidentByDate);
+fraudIncidentRouter.get("/:rowId", verifyToken, getFraudIncident);
 fraudIncidentRouter.post("/", verifyToken, createFraudIncident);
 fraudIncidentRouter.put("/:rowId", verifyToken, updateFraudIncident);
 fraudIncidentRouter.delete("/:rowId", verifyToken, deleteFraudIncident);

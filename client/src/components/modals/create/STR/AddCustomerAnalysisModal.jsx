@@ -5,9 +5,10 @@ import apiRequest from "../../../../lib/apiRequest";
 import { pspName } from "../../../../lib/subCountyData";
 
 const customerTypes = [
-    { code: "MLCFTCTC01", name: "Individual" },
-    { code: "MLCFTCT02", name: "Corporate" },
-    { code: "MLCFTCT03", name: "Merchants" },
+    { code: "MLCFTCTC01", name: "Individual Clients" },
+    { code: "MLCFTCTC02", name: "Corporate Clients" },
+    { code: "MLCFTCTC03", name: "Merchants" },
+    { code: "MLCFTCTC04", name: "Other" },
 ];
 
 const customerCategories = [

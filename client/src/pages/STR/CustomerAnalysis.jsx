@@ -6,9 +6,10 @@ import { Fragment } from "react";
 
 // ─── Lookup maps ─────────────────────────────────────────────────────────────
 const codeToDescription = {
-    MLCFTCTC01: "Individual",
-    MLCFTCT02: "Corporate",
-    MLCFTCT03: "Merchants",
+    MLCFTCTC01: "Individual Clients",
+    MLCFTCTC02: "Corporate Clients",
+    MLCFTCTC03: "Merchants",
+    MLCFTCTC04: "Other",
     MLCFTCCO1: "Resident",
     MLCFTCCO2: "Non Resident",
     MLCFTCCO3: "Domestic PEPS",

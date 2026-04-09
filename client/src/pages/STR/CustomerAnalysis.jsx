@@ -29,10 +29,10 @@ const codeToDescription = {
     MLCFTCCO18: "Motor Vehicle Dealers",
     MLCFTCCO19: "Other High risk customer",
     MLCFTCCO20: "Merchants",
-    MLCFTTT01: "Deposit",
-    MLCFTTT02: "Withdrawal",
-    MLCFTTT03: "Transfers",
-    MLCFTTT04: "Any other",
+    MLCFTTTO1: "Deposit",
+    MLCFTTTO2: "Withdrawal",
+    MLCFTTTO3: "Transfers",
+    MLCFTTTO4: "Any other",
 };
 const getDesc = (code) => codeToDescription[code] || code;
 

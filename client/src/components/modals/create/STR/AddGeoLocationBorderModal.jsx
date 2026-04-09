@@ -52,10 +52,10 @@ const agentTypes = [
 ];
 
 const transactionTypes = [
-    { code: "MLCFTTT01", name: "Deposit" },
-    { code: "MLCFTTT02", name: "Withdrawal" },
-    { code: "MLCFTTT03", name: "Transfers" },
-    { code: "MLCFTTT04", name: "Any other" },
+    { code: "MLCFTTTO1", name: "Deposit" },
+    { code: "MLCFTTTO2", name: "Withdrawal" },
+    { code: "MLCFTTTO3", name: "Transfers" },
+    { code: "MLCFTTTO4", name: "Any other" },
 ];
 
 export default function AddGeoLocationBorderModal({

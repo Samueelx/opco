@@ -132,10 +132,10 @@ export default function EditUNSanctionsListModal({
                           className="outline-none border p-1.5 rounded"
                         >
                           <option value="">Select...</option>
-                          <option value="MLCFTTT01">Deposit</option>
-                          <option value="MLCFTTT02">Withdrawal</option>
-                          <option value="MLCFTTT03">Transfers</option>
-                          <option value="MLCFTTT04">Any other</option>
+                          <option value="MLCFTTTO1">Deposit</option>
+                          <option value="MLCFTTTO2">Withdrawal</option>
+                          <option value="MLCFTTTO3">Transfers</option>
+                          <option value="MLCFTTTO4">Any other</option>
                         </select>
                       </div>
 

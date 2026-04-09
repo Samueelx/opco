@@ -18,7 +18,7 @@ const PSPIncidentFraud = () => {
   }
 
   useEffect(() => {
-    if (reportingDate) { 
+    if (reportingDate) {
       fetchTrustAccountsData();
     }
   }, [reportingDate]);
@@ -40,7 +40,7 @@ const PSPIncidentFraud = () => {
       console.error(error);
     }
   };
-  
+
   return (
     <div className="max-w-[1440px] w-full mx-auto py-10 overflow-hidden">
       <div className="flex justify-center flex-col gap-5 w-full">
@@ -51,9 +51,9 @@ const PSPIncidentFraud = () => {
         <div className="p-4 flex items-center justify-center gap-4 flex-wrap">
           <div className="flex gap-2">
             <h5 className="font-semibold">Select a Reporting Date: </h5>
-            <input type="date" name="reportingDate" id="reportingDate" className="border border-red-500 rounded" value={reportingDate} onChange={e=>{
+            <input type="date" name="reportingDate" id="reportingDate" className="border border-red-500 rounded" value={reportingDate} onChange={e => {
               setReportingDate(e.target.value)
-              }}/>
+            }} />
           </div>
         </div>
 

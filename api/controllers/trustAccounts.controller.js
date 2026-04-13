@@ -249,7 +249,11 @@ export const createTrustAccountFromCSV = async (req, res) => {
             console.log("[CSV ROW] Attempting insert with data:", JSON.stringify(data));
 
             try {
-              await prisma.trustAcc.create({ data });
+              const created = await prisma.trustAcc.create({ data });
+              // Read-back verification — confirm the record actually persisted
+              const readBack = await prisma.trustAcc.findUnique({ where: { rowId: created.rowId } });
+              const totalCount = await prisma.trustAcc.count();
+              console.log(`[DB VERIFY] rowId=${created.rowId} | readBack=${readBack ? 'FOUND' : 'NOT FOUND'} | totalCount=${totalCount}`);
               console.log("File data uploaded successfully for a row");
               return { status: 'success' };
             } catch (error) {

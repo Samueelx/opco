@@ -223,6 +223,23 @@ export const createTrustAccountFromCSV = async (req, res) => {
             'P2B21','P2B22','P2B23','P2B24','P2B99',
           ]);
 
+          // Normalize any incoming date to YYYY-MM-DD (the standard stored format).
+          // Handles: DD-MM-YY (09-04-26), DD-MM-YYYY (09-04-2026), YYYY-MM-DD (passthrough).
+          const normalizeDate = (raw) => {
+            if (!raw) return raw;
+            const s = raw.trim();
+            // Already YYYY-MM-DD
+            if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+            // DD-MM-YY or DD-MM-YYYY
+            const match = s.match(/^(\d{2})-(\d{2})-(\d{2,4})$/);
+            if (match) {
+              const [, dd, mm, yy] = match;
+              const yyyy = yy.length === 2 ? `20${yy}` : yy;
+              return `${yyyy}-${mm}-${dd}`;
+            }
+            return s; // return as-is if unrecognised
+          };
+
           // Create an array of Promises, one for each database insertion attempt
           const createPromises = validRows.map(async (row) => {
             // csv-parser now parses columns by name; map by position via Object.values
@@ -233,7 +250,7 @@ export const createTrustAccountFromCSV = async (req, res) => {
             const data = {
               pspId: cols[0]?.trim(),
               bankId: cols[1]?.trim(),
-              reportingDate: cols[2]?.trim(),
+              reportingDate: normalizeDate(cols[2]),
               bankAccNumber: cols[3]?.trim(),
               trustAccDrTypeCode: cols[4]?.trim(),
               orgReceivingDonation: cols[5]?.trim(),
@@ -246,14 +263,9 @@ export const createTrustAccountFromCSV = async (req, res) => {
               trustAccInterestUtilized: parseAmount(cols[11]),
             };
 
-            console.log("[CSV ROW] Attempting insert with data:", JSON.stringify(data));
 
             try {
-              const created = await prisma.trustAcc.create({ data });
-              // Read-back verification — confirm the record actually persisted
-              const readBack = await prisma.trustAcc.findUnique({ where: { rowId: created.rowId } });
-              const totalCount = await prisma.trustAcc.count();
-              console.log(`[DB VERIFY] rowId=${created.rowId} | readBack=${readBack ? 'FOUND' : 'NOT FOUND'} | totalCount=${totalCount}`);
+              await prisma.trustAcc.create({ data });
               console.log("File data uploaded successfully for a row");
               return { status: 'success' };
             } catch (error) {

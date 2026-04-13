@@ -216,37 +216,49 @@ export const createTrustAccountFromCSV = async (req, res) => {
             return vals.length > 0 && vals.some(v => typeof v === 'string' && v.trim() !== '');
           });
 
+          // Valid SectorCode enum values (must match schema.prisma exactly)
+          const VALID_SECTOR_CODES = new Set([
+            'P2B05','P2B06','P2B07','P2B08','P2B09','P2B10','P2B11','P2B12',
+            'P2B13','P2B14','P2B15','P2B16','P2B17','P2B18','P2B19','P2B20',
+            'P2B21','P2B22','P2B23','P2B24','P2B99',
+          ]);
+
           // Create an array of Promises, one for each database insertion attempt
           const createPromises = validRows.map(async (row) => {
             // csv-parser now parses columns by name; map by position via Object.values
             const cols = Object.values(row);
+            const rawSectorCode = cols[6]?.trim();
+            const sectorCode = VALID_SECTOR_CODES.has(rawSectorCode) ? rawSectorCode : undefined;
+
+            const data = {
+              pspId: cols[0]?.trim(),
+              bankId: cols[1]?.trim(),
+              reportingDate: cols[2]?.trim(),
+              bankAccNumber: cols[3]?.trim(),
+              trustAccDrTypeCode: cols[4]?.trim(),
+              orgReceivingDonation: cols[5]?.trim(),
+              sectorCode,
+              trustAccIntUtilizedDetails: cols[7]?.trim(),
+              openingBal: parseAmount(cols[8]),
+              principalAmount: parseAmount(cols[9]),
+              interestEarned: parseAmount(cols[10]),
+              closingBal: parseAmount(cols[9]) + parseAmount(cols[10]), // principal + interest
+              trustAccInterestUtilized: parseAmount(cols[11]),
+            };
+
+            console.log("[CSV ROW] Attempting insert with data:", JSON.stringify(data));
+
             try {
-              await prisma.trustAcc.create({
-                data: {
-                  pspId: cols[0]?.trim(),
-                  bankId: cols[1]?.trim(),
-                  reportingDate: cols[2]?.trim(),
-                  bankAccNumber: cols[3]?.trim(),
-                  trustAccDrTypeCode: cols[4]?.trim(),
-                  orgReceivingDonation: cols[5]?.trim(),
-                  sectorCode: cols[6]?.trim() ?? "",
-                  trustAccIntUtilizedDetails: cols[7]?.trim(),
-                  openingBal: parseAmount(cols[8]),
-                  principalAmount: parseAmount(cols[9]),
-                  interestEarned: parseAmount(cols[10]),
-                  closingBal: parseAmount(cols[9]) + parseAmount(cols[10]), // principal + interest
-                  trustAccInterestUtilized: parseAmount(cols[11]),
-                },
-              });
+              await prisma.trustAcc.create({ data });
               console.log("File data uploaded successfully for a row");
               return { status: 'success' };
             } catch (error) {
+              const errMsg = error.message ?? String(error);
               console.error(
                 `Failed to create a Trust Account entry for row: ${JSON.stringify(cols)}`,
-                error
+                errMsg
               );
-              // Only capture the message string — Prisma errors have circular refs
-              return { status: 'error', error: error.message ?? String(error) };
+              return { status: 'error', error: errMsg };
             }
           });
 

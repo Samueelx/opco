@@ -204,7 +204,7 @@ export const createTrustAccountFromCSV = async (req, res) => {
 
     const rows = [];
     fs.createReadStream(filePath)
-      .pipe(csv({ separator: "\n" }))
+      .pipe(csv()) // default comma separator
       .on("data", (row) => {
         rows.push(row);
       })
@@ -212,66 +212,66 @@ export const createTrustAccountFromCSV = async (req, res) => {
         try {
           const validRows = rows.filter(row => {
             const vals = Object.values(row);
-            return vals.length > 0 && typeof vals[0] === 'string' && vals[0].trim() !== '';
+            // Skip empty rows or rows where the first column is blank
+            return vals.length > 0 && vals.some(v => typeof v === 'string' && v.trim() !== '');
           });
 
           // Create an array of Promises, one for each database insertion attempt
           const createPromises = validRows.map(async (row) => {
-            const newSplit = Object.values(row)[0].split(",");
+            // csv-parser now parses columns by name; map by position via Object.values
+            const cols = Object.values(row);
             try {
               await prisma.trustAcc.create({
                 data: {
-                  pspId: newSplit[0],
-                  bankId: newSplit[1],
-                  reportingDate: newSplit[2],
-                  bankAccNumber: newSplit[3],
-                  trustAccDrTypeCode: newSplit[4],
-                  orgReceivingDonation: newSplit[5],
-                  sectorCode: newSplit[6],
-                  trustAccIntUtilizedDetails: newSplit[7],
-                  openingBal: parseAmount(newSplit[8]),
-                  principalAmount: parseAmount(newSplit[9]),
-                  interestEarned: parseAmount(newSplit[10]),
-                  closingBal: parseAmount(newSplit[11]) + parseAmount(newSplit[12]),
-                  trustAccInterestUtilized: parseAmount(newSplit[13]),
+                  pspId: cols[0]?.trim(),
+                  bankId: cols[1]?.trim(),
+                  reportingDate: cols[2]?.trim(),
+                  bankAccNumber: cols[3]?.trim(),
+                  trustAccDrTypeCode: cols[4]?.trim(),
+                  orgReceivingDonation: cols[5]?.trim(),
+                  sectorCode: cols[6]?.trim() ?? "",
+                  trustAccIntUtilizedDetails: cols[7]?.trim(),
+                  openingBal: parseAmount(cols[8]),
+                  principalAmount: parseAmount(cols[9]),
+                  interestEarned: parseAmount(cols[10]),
+                  closingBal: parseAmount(cols[9]) + parseAmount(cols[10]), // principal + interest
+                  trustAccInterestUtilized: parseAmount(cols[11]),
                 },
               });
               console.log("File data uploaded successfully for a row");
-              return { status: 'success', row: row };
+              return { status: 'success' };
             } catch (error) {
               console.error(
-                `Failed to create a Trust Account entry for row: ${JSON.stringify(
-                  row
-                )}`,
+                `Failed to create a Trust Account entry for row: ${JSON.stringify(cols)}`,
                 error
               );
-              // Return an error status for this specific row instead of throwing entirely
-              return { status: 'error', row: row, error: error.message };
+              // Only capture the message string — Prisma errors have circular refs
+              return { status: 'error', error: error.message ?? String(error) };
             }
           });
 
           // Wait for ALL promises in the array to settle (either success or failure)
           const results = await Promise.all(createPromises);
-          console.log("Results here")
-          results.forEach(result => {
-            if (result.status === 'error'){
-              console.error(`[SUMMARY ERROR] Row failed: ${JSON.stringify(result.row)} Reason: ${result.error}`);
-            }
+          console.log("Results here");
+
+          const failedResults = results.filter(r => r.status === 'error');
+          failedResults.forEach(result => {
+            console.error(`[SUMMARY ERROR] Row failed — Reason: ${result.error}`);
           });
 
           // Clean up the uploaded file
-          //fs.unlinkSync(filePath);
+          deleteFile(filePath);
 
-          // You can now analyze 'results' to see if any errors occurred
-          const errorsOccurred = results.some(result => result.status === 'error');
+          const successCount = results.length - failedResults.length;
+          console.log(`CSV processing complete: ${successCount}/${results.length} rows inserted.`);
 
-          if (errorsOccurred) {
-            // If any single row failed, return a 500 or 400 error status
-            console.log("Errors occured", errorsOccurred);
-            res.status(500).json({ message: "Some rows failed to process during database insertion." });
+          if (failedResults.length > 0) {
+            res.status(207).json({
+              message: `${successCount} of ${results.length} rows inserted. ${failedResults.length} row(s) failed.`,
+              errors: failedResults.map(r => r.error),
+            });
           } else {
-            // If all rows succeeded, return 201 success
-            res.status(201).json({ message: "CSV file processed successfully, all rows inserted." });
+            res.status(201).json({ message: `CSV file processed successfully. ${successCount} rows inserted.` });
           }
         } catch (error) {
           console.error("Critical error in processing rows:", error);

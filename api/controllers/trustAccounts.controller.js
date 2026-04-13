@@ -265,9 +265,9 @@ export const createTrustAccountFromCSV = async (req, res) => {
 
 
             try {
-              await prisma.trustAcc.create({ data });
+              const created = await prisma.trustAcc.create({ data });
               console.log("File data uploaded successfully for a row");
-              return { status: 'success' };
+              return { status: 'success', record: created };
             } catch (error) {
               const errMsg = error.message ?? String(error);
               console.error(
@@ -293,13 +293,19 @@ export const createTrustAccountFromCSV = async (req, res) => {
           const successCount = results.length - failedResults.length;
           console.log(`CSV processing complete: ${successCount}/${results.length} rows inserted.`);
 
+          const insertedRecords = results.filter(r => r.status === 'success').map(r => r.record);
+
           if (failedResults.length > 0) {
             res.status(207).json({
               message: `${successCount} of ${results.length} rows inserted. ${failedResults.length} row(s) failed.`,
+              records: insertedRecords,
               errors: failedResults.map(r => r.error),
             });
           } else {
-            res.status(201).json({ message: `CSV file processed successfully. ${successCount} rows inserted.` });
+            res.status(201).json({
+              message: `CSV file processed successfully. ${successCount} rows inserted.`,
+              records: insertedRecords,
+            });
           }
         } catch (error) {
           console.error("Critical error in processing rows:", error);

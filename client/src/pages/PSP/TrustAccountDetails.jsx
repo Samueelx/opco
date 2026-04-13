@@ -96,7 +96,13 @@ const TrustAccountDetails = () => {
       <UploadTrustAccDetailsModal
         isOpen={csvOpen}
         setIsOpen={setCsvOpen}
-        onRecordAdded={fetchTrustAccountsData}
+        onRecordAdded={(uploadedRecords) => {
+          if (uploadedRecords && uploadedRecords.length > 0) {
+            setTrustAccounts(uploadedRecords);
+            // Auto-set the date picker to match the uploaded data's reporting date
+            setReportingDate(uploadedRecords[0].reportingDate);
+          }
+        }}
       />
     </div>
   );

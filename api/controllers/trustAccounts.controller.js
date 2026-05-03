@@ -260,7 +260,7 @@ export const createTrustAccountFromCSV = async (req, res) => {
               principalAmount: parseAmount(cols[9]),
               interestEarned: parseAmount(cols[10]),
               closingBal: parseAmount(cols[9]) + parseAmount(cols[10]), // principal + interest
-              trustAccInterestUtilized: parseAmount(cols[11]),
+              trustAccInterestUtilized: parseAmount(cols[12]),
             };
 
 

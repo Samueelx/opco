@@ -4,7 +4,7 @@ import path from "path";
 import csv from "csv-parser";
 
 import prisma from "../lib/prisma.js";
-import { parseAmount } from "../utils/utils.js";
+import { parseAmount, formatDateToCBKFormat } from "../utils/utils.js";
 
 // Get all Shareholders
 export const getShareholders = async (req, res) => {
@@ -18,7 +18,14 @@ export const getShareholders = async (req, res) => {
 
     const shareholders = await prisma.shareholder.findMany();
 
-    res.status(200).json(shareholders);
+    const formatted = shareholders.map((s) => ({
+      ...s,
+      reportingDate: formatDateToCBKFormat(s.reportingDate),
+      dateOfBirth: formatDateToCBKFormat(s.dateOfBirth),
+      dateBecameShareholder: formatDateToCBKFormat(s.dateBecameShareholder),
+    }));
+
+    res.status(200).json(formatted);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch Shareholders!", error });
   }
@@ -40,7 +47,14 @@ export const getShareholder = async (req, res) => {
       where: { rowId },
     });
 
-    res.status(200).json(oneShareholder);
+    const formatted = oneShareholder ? {
+      ...oneShareholder,
+      reportingDate: formatDateToCBKFormat(oneShareholder.reportingDate),
+      dateOfBirth: formatDateToCBKFormat(oneShareholder.dateOfBirth),
+      dateBecameShareholder: formatDateToCBKFormat(oneShareholder.dateBecameShareholder),
+    } : oneShareholder;
+
+    res.status(200).json(formatted);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch Shareholder!", error });
   }

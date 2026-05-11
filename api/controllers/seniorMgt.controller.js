@@ -4,6 +4,7 @@ import path from "path";
 import csv from "csv-parser";
 
 import prisma from "../lib/prisma.js";
+import { formatDateToCBKFormat } from "../utils/utils.js";
 
 // Get all Senior Mgts
 export const getSeniorMgts = async (req, res) => {
@@ -17,7 +18,15 @@ export const getSeniorMgts = async (req, res) => {
 
     const seniorManagers = await prisma.seniorMgt.findMany();
 
-    res.status(200).json(seniorManagers);
+    const formatted = seniorManagers.map((s) => ({
+      ...s,
+      reportingDate: formatDateToCBKFormat(s.reportingDate),
+      dateOfBirth: formatDateToCBKFormat(s.dateOfBirth),
+      dateOfEmployment: formatDateToCBKFormat(s.dateOfEmployment),
+      expectedDateOfRetirement: formatDateToCBKFormat(s.expectedDateOfRetirement),
+    }));
+
+    res.status(200).json(formatted);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch Senior Mgts!", error });
   }
@@ -39,7 +48,15 @@ export const getSeniorMgt = async (req, res) => {
       where: { rowId },
     });
 
-    res.status(200).json(seniorManager);
+    const formatted = seniorManager ? {
+      ...seniorManager,
+      reportingDate: formatDateToCBKFormat(seniorManager.reportingDate),
+      dateOfBirth: formatDateToCBKFormat(seniorManager.dateOfBirth),
+      dateOfEmployment: formatDateToCBKFormat(seniorManager.dateOfEmployment),
+      expectedDateOfRetirement: formatDateToCBKFormat(seniorManager.expectedDateOfRetirement),
+    } : seniorManager;
+
+    res.status(200).json(formatted);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch Director!", error });
   }

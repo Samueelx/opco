@@ -217,17 +217,30 @@ const deleteFile = (filePath) => {
   });
 };
 
-// Parses dates in DD-Mon-YY format (e.g. "14-Dec-25") → "14-Dec-2025"
+// Parses dates from multiple formats into DD-Mon-YYYY
+// Handles: "14-Dec-25", "14-Dec-2025", "02/05/2026" (Excel DD/MM/YYYY), "2026-05-02" (ISO)
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
 const parseIncidentDate = (value) => {
   if (!value) return "";
   const trimmed = value.trim();
-  // Already in DD-Mon-YY or DD-Mon-YYYY format
-  const match = trimmed.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$/);
-  if (match) {
-    const [, day, mon, yr] = match;
+
+  // DD-Mon-YY or DD-Mon-YYYY (e.g. "14-Dec-25" or "14-Dec-2025")
+  const monMatch = trimmed.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$/);
+  if (monMatch) {
+    const [, day, mon, yr] = monMatch;
     const year = yr.length === 2 ? `20${yr}` : yr;
     return `${day}-${mon}-${year}`;
   }
+
+  // DD/MM/YYYY (e.g. "02/05/2026") — Excel default date export format
+  const slashMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (slashMatch) {
+    const [, day, month, year] = slashMatch;
+    const mon = MONTH_NAMES[parseInt(month, 10) - 1];
+    return `${day.padStart(2, "0")}-${mon}-${year}`;
+  }
+
   // Fall back to formatDate for YYYY-MM-DD inputs
   return formatDate(trimmed);
 };

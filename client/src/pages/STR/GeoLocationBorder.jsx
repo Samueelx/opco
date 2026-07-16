@@ -54,15 +54,53 @@ const codeToDescription = {
 };
 const getDesc = (code) => codeToDescription[code] || code;
 
-// ─── CSV Parser ───────────────────────────────────────────────────────────────
+// ─── CSV Parser (handles quoted fields with commas) ───────────────────────────
+const parseCsvLine = (line) => {
+    const values = [];
+    let current = "";
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (inQuotes) {
+            if (ch === '"') {
+                if (i + 1 < line.length && line[i + 1] === '"') { current += '"'; i++; }
+                else { inQuotes = false; }
+            } else { current += ch; }
+        } else {
+            if (ch === '"') { inQuotes = true; }
+            else if (ch === ',') { values.push(current.trim()); current = ""; }
+            else { current += ch; }
+        }
+    }
+    values.push(current.trim());
+    return values;
+};
+
 const parseCSV = (csvText) => {
     const lines = csvText.trim().split(/\r?\n/);
     if (lines.length < 2) return [];
-    const headers = lines[0].split(",").map((h) => h.trim().replace(/^"|"$/g, ""));
+    const headers = parseCsvLine(lines[0]);
     return lines.slice(1).map((line) => {
-        const values = line.split(",").map((v) => v.trim().replace(/^"|"$/g, ""));
+        const values = parseCsvLine(line);
         return headers.reduce((obj, h, i) => { obj[h] = values[i] ?? ""; return obj; }, {});
     });
+};
+
+// ─── Transaction‐type code mapping (CSV → Prisma enum) ───────────────────────
+const TRANSACTION_TYPE_MAP = {
+    "MLCFTTT01": "MLCFTTTO1",
+    "MLCFTTT02": "MLCFTTTO2",
+    "MLCFTTT03": "MLCFTTTO3",
+    "MLCFTTT04": "MLCFTTTO4",
+};
+
+const mapTransactionType = (code) => TRANSACTION_TYPE_MAP[code] || code;
+
+const parseNumericOrNull = (value) => {
+    if (value == null || value === "" || value === "-") return null;
+    const cleaned = String(value).replace(/,/g, "");
+    const num = Number(cleaned);
+    return isNaN(num) ? null : num;
 };
 
 // ─── Inline CSV Upload Modal ──────────────────────────────────────────────────
@@ -83,12 +121,13 @@ function UploadGeoLocationBorderModal({ isOpen, setIsOpen, onRecordAdded }) {
             try {
                 const jsonData = parseCSV(event.target.result);
                 const mappedData = jsonData.map((row) => ({
-                    reportingDate: String(row["Reporting Date"] || row.reportingDate || ""),
+                    pspId: String(row["PSP ID"] || row.pspId || ""),
+                    reportingDate: String(row["Reporting date"] || row["Reporting Date"] || row.reportingDate || ""),
                     borderPoint: String(row["Border points"] || row.borderPoint || ""),
                     agentType: String(row["Agent type"] || row.agentType || ""),
-                    transactionType: String(row["Transaction type"] || row.transactionType || ""),
-                    numberOfTransactions: Number(row["Number of transactions"] || row.numberOfTransactions || 0),
-                    valueOfTransactions: Number(row["Value of transactions"] || row.valueOfTransactions || 0),
+                    transactionType: mapTransactionType(String(row["Transaction type"] || row.transactionType || "")),
+                    numberOfTransactions: parseNumericOrNull(row["Number of transactions"] ?? row.numberOfTransactions),
+                    valueOfTransactions: parseNumericOrNull(row["Value of transactions"] ?? row.valueOfTransactions),
                 }));
                 await apiRequest.post("/geo-location-border", mappedData);
                 onRecordAdded();

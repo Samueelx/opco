@@ -637,8 +637,8 @@ model GeoLocationBorder {
   borderPoint          BorderPointCode
   agentType            AgentTypeCode
   transactionType      TransactionType
-  numberOfTransactions Int
-  valueOfTransactions  Float
+  numberOfTransactions Int?
+  valueOfTransactions  Float?
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @default(now())
 }

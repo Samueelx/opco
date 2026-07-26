@@ -118,7 +118,7 @@ export const createCustomerComplaint = async (req, res) => {
         gender,
         frequency,
         name,
-        age: parseInt(age),
+        age: age ? String(age) : "",
         contact,
         subCounty,
         education,
@@ -184,7 +184,7 @@ export const updateCustomerComplaint = async (req, res) => {
         gender,
         frequency,
         name,
-        age: parseInt(age),
+        age: age ? String(age) : "",
         contact,
         subCounty,
         education,
@@ -260,13 +260,13 @@ export const createCustomerComplaintFromCSV = async (req, res) => {
 
     const rows = [];
     fs.createReadStream(filePath)
-      .pipe(csv({ separator: "\n" }))
+      .pipe(csv())
       .on("data", (row) => {
         rows.push(row);
       })
       .on("end", async () => {
         for (const row of rows) {
-          const newSplit = Object.values(row)[0].split(",");
+          const newSplit = Object.values(row);
           try {
             await prisma.customerComplaint.create({
               data: {
@@ -277,10 +277,10 @@ export const createCustomerComplaintFromCSV = async (req, res) => {
                 gender: newSplit[4],
                 frequency: newSplit[5],
                 name: newSplit[6],
-                age: newSplit[7] ? parseInt(newSplit[7]) : "",
+                age: newSplit[7] ? String(newSplit[7]) : "",
                 contact: newSplit[8],
                 subCounty: newSplit[9],
-                education: "",
+                education: newSplit[10],
                 otherDetails: newSplit[11],
                 agentId: newSplit[12],
                 dateOfOccurrence: formatDate2(newSplit[13]),

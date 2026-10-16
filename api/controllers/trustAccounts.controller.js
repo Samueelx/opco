@@ -204,7 +204,7 @@ export const createTrustAccountFromCSV = async (req, res) => {
 
     const rows = [];
     fs.createReadStream(filePath)
-      .pipe(csv({ separator: "\n" }))
+      .pipe(csv()) // default comma separator
       .on("data", (row) => {
         rows.push(row);
       })
@@ -212,66 +212,100 @@ export const createTrustAccountFromCSV = async (req, res) => {
         try {
           const validRows = rows.filter(row => {
             const vals = Object.values(row);
-            return vals.length > 0 && typeof vals[0] === 'string' && vals[0].trim() !== '';
+            // Skip empty rows or rows where the first column is blank
+            return vals.length > 0 && vals.some(v => typeof v === 'string' && v.trim() !== '');
           });
+
+          // Valid SectorCode enum values (must match schema.prisma exactly)
+          const VALID_SECTOR_CODES = new Set([
+            'P2B05','P2B06','P2B07','P2B08','P2B09','P2B10','P2B11','P2B12',
+            'P2B13','P2B14','P2B15','P2B16','P2B17','P2B18','P2B19','P2B20',
+            'P2B21','P2B22','P2B23','P2B24','P2B99',
+          ]);
+
+          // Normalize any incoming date to YYYY-MM-DD (the standard stored format).
+          // Handles: DD-MM-YY (09-04-26), DD-MM-YYYY (09-04-2026), YYYY-MM-DD (passthrough).
+          const normalizeDate = (raw) => {
+            if (!raw) return raw;
+            const s = raw.trim();
+            // Already YYYY-MM-DD
+            if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+            // DD-MM-YY or DD-MM-YYYY
+            const match = s.match(/^(\d{2})-(\d{2})-(\d{2,4})$/);
+            if (match) {
+              const [, dd, mm, yy] = match;
+              const yyyy = yy.length === 2 ? `20${yy}` : yy;
+              return `${yyyy}-${mm}-${dd}`;
+            }
+            return s; // return as-is if unrecognised
+          };
 
           // Create an array of Promises, one for each database insertion attempt
           const createPromises = validRows.map(async (row) => {
-            const newSplit = Object.values(row)[0].split(",");
+            // csv-parser now parses columns by name; map by position via Object.values
+            const cols = Object.values(row);
+            const rawSectorCode = cols[6]?.trim();
+            const sectorCode = VALID_SECTOR_CODES.has(rawSectorCode) ? rawSectorCode : undefined;
+
+            const data = {
+              pspId: cols[0]?.trim(),
+              bankId: cols[1]?.trim(),
+              reportingDate: normalizeDate(cols[2]),
+              bankAccNumber: cols[3]?.trim(),
+              trustAccDrTypeCode: cols[4]?.trim(),
+              orgReceivingDonation: cols[5]?.trim(),
+              sectorCode,
+              trustAccIntUtilizedDetails: cols[7]?.trim(),
+              openingBal: parseAmount(cols[8]),
+              principalAmount: parseAmount(cols[9]),
+              interestEarned: parseAmount(cols[10]),
+              closingBal: parseAmount(cols[9]) + parseAmount(cols[10]), // principal + interest
+              trustAccInterestUtilized: parseAmount(cols[12]),
+            };
+
+
             try {
-              await prisma.trustAcc.create({
-                data: {
-                  pspId: newSplit[0],
-                  bankId: newSplit[1],
-                  reportingDate: newSplit[2],
-                  bankAccNumber: newSplit[3],
-                  trustAccDrTypeCode: newSplit[4],
-                  orgReceivingDonation: newSplit[5],
-                  sectorCode: newSplit[6],
-                  trustAccIntUtilizedDetails: newSplit[7],
-                  openingBal: parseAmount(newSplit[8]),
-                  principalAmount: parseAmount(newSplit[9]),
-                  interestEarned: parseAmount(newSplit[10]),
-                  closingBal: parseAmount(newSplit[11]) + parseAmount(newSplit[12]),
-                  trustAccInterestUtilized: parseAmount(newSplit[13]),
-                },
-              });
+              const created = await prisma.trustAcc.create({ data });
               console.log("File data uploaded successfully for a row");
-              return { status: 'success', row: row };
+              return { status: 'success', record: created };
             } catch (error) {
+              const errMsg = error.message ?? String(error);
               console.error(
-                `Failed to create a Trust Account entry for row: ${JSON.stringify(
-                  row
-                )}`,
-                error
+                `Failed to create a Trust Account entry for row: ${JSON.stringify(cols)}`,
+                errMsg
               );
-              // Return an error status for this specific row instead of throwing entirely
-              return { status: 'error', row: row, error: error.message };
+              return { status: 'error', error: errMsg };
             }
           });
 
           // Wait for ALL promises in the array to settle (either success or failure)
           const results = await Promise.all(createPromises);
-          console.log("Results here")
-          results.forEach(result => {
-            if (result.status === 'error'){
-              console.error(`[SUMMARY ERROR] Row failed: ${JSON.stringify(result.row)} Reason: ${result.error}`);
-            }
+          console.log("Results here");
+
+          const failedResults = results.filter(r => r.status === 'error');
+          failedResults.forEach(result => {
+            console.error(`[SUMMARY ERROR] Row failed — Reason: ${result.error}`);
           });
 
           // Clean up the uploaded file
-          //fs.unlinkSync(filePath);
+          deleteFile(filePath);
 
-          // You can now analyze 'results' to see if any errors occurred
-          const errorsOccurred = results.some(result => result.status === 'error');
+          const successCount = results.length - failedResults.length;
+          console.log(`CSV processing complete: ${successCount}/${results.length} rows inserted.`);
 
-          if (errorsOccurred) {
-            // If any single row failed, return a 500 or 400 error status
-            console.log("Errors occured", errorsOccurred);
-            res.status(500).json({ message: "Some rows failed to process during database insertion." });
+          const insertedRecords = results.filter(r => r.status === 'success').map(r => r.record);
+
+          if (failedResults.length > 0) {
+            res.status(207).json({
+              message: `${successCount} of ${results.length} rows inserted. ${failedResults.length} row(s) failed.`,
+              records: insertedRecords,
+              errors: failedResults.map(r => r.error),
+            });
           } else {
-            // If all rows succeeded, return 201 success
-            res.status(201).json({ message: "CSV file processed successfully, all rows inserted." });
+            res.status(201).json({
+              message: `CSV file processed successfully. ${successCount} rows inserted.`,
+              records: insertedRecords,
+            });
           }
         } catch (error) {
           console.error("Critical error in processing rows:", error);

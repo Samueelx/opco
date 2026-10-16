@@ -6,8 +6,12 @@ export const createGeoLocationBorder = async (req, res) => {
   try {
     const formattedData = data.map((item) => ({
       ...item,
-      numberOfTransactions: parseInt(item.numberOfTransactions, 10),
-      valueOfTransactions: parseFloat(item.valueOfTransactions),
+      numberOfTransactions: item.numberOfTransactions != null
+        ? parseInt(item.numberOfTransactions, 10)
+        : null,
+      valueOfTransactions: item.valueOfTransactions != null
+        ? parseFloat(item.valueOfTransactions)
+        : null,
     }));
 
     const result = await prisma.geoLocationBorder.createMany({

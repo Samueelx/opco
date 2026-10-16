@@ -56,12 +56,12 @@ export default function UploadTrustAccDetailsModal({
         }
       );
       
-      if (response.status === 200 || response.status === 201) {
-        onRecordAdded();
-        closeModal()
+      if (response.status === 200 || response.status === 201 || response.status === 207) {
+        onRecordAdded(response.data.records ?? []);
+        closeModal();
         console.log("CSV file uploaded successfully!", response.data);
-      }else{
-        throw new Error("Failed to upload file")
+      } else {
+        throw new Error("Failed to upload file");
       }
     } catch (error) {
       console.error("Error uploading file: ", error);

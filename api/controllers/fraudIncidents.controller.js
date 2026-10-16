@@ -6,6 +6,12 @@ import csv from "csv-parser";
 import prisma from "../lib/prisma.js";
 import { formatDate } from "../lib/utils.js";
 import { formatDateToIncidentDateFormat, parseAmount } from "../utils/utils.js";
+import { 
+  getSubCountyCode, 
+  getVictimCategoryCode, 
+  getFraudCategoryCode, 
+  getSubFraudCode 
+} from "../utils/cbkMappings.js";
 
 // Get all Fraud Incidents
 export const getFraudIncidents = async (req, res) => {
@@ -94,7 +100,6 @@ export const createFraudIncident = async (req, res) => {
   } = req.body;
   const token = req.cookies?.token;
 
-
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
     const userTokenUserType = decodedToken.userType;
@@ -105,11 +110,11 @@ export const createFraudIncident = async (req, res) => {
     const newFraudIncident = await prisma.fraudIncident.create({
       data: {
         pspId,
-        reportingDate:formatDate(reportingDate),
-        subCountyCode,
-        subFraudCode,
-        fraudCategoryFlag,
-        victimCategory,
+        reportingDate: formatDate(reportingDate),
+        subCountyCode: getSubCountyCode(subCountyCode),
+        subFraudCode: getSubFraudCode(subFraudCode),
+        fraudCategoryFlag: getFraudCategoryCode(fraudCategoryFlag),
+        victimCategory: getVictimCategoryCode(victimCategory),
         victimInfo,
         dateOfOccurence: formatDate(dateOfOccurence),
         numberOfIncidents: parseInt(numberOfIncidents),
@@ -162,12 +167,12 @@ export const updateFraudIncident = async (req, res) => {
       data: {
         pspId,
         reportingDate: formatDate(reportingDate),
-        subCountyCode,
-        subFraudCode,
-        fraudCategoryFlag,
-        victimCategory,
+        subCountyCode: getSubCountyCode(subCountyCode),
+        subFraudCode: getSubFraudCode(subFraudCode),
+        fraudCategoryFlag: getFraudCategoryCode(fraudCategoryFlag),
+        victimCategory: getVictimCategoryCode(victimCategory),
         victimInfo,
-        dateOfOccurence:formatDate(dateOfOccurence),
+        dateOfOccurence: formatDate(dateOfOccurence),
         numberOfIncidents: parseInt(numberOfIncidents),
         amountInvolved: parseAmount(amountInvolved),
         amountLost: parseAmount(amountLost),
@@ -217,22 +222,29 @@ const deleteFile = (filePath) => {
   });
 };
 
-// Parses dates in DD-Mon-YY format (e.g. "14-Dec-25") → "14-Dec-2025"
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
 const parseIncidentDate = (value) => {
   if (!value) return "";
   const trimmed = value.trim();
-  // Already in DD-Mon-YY or DD-Mon-YYYY format
-  const match = trimmed.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$/);
-  if (match) {
-    const [, day, mon, yr] = match;
+
+  const monMatch = trimmed.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$/);
+  if (monMatch) {
+    const [, day, mon, yr] = monMatch;
     const year = yr.length === 2 ? `20${yr}` : yr;
     return `${day}-${mon}-${year}`;
   }
-  // Fall back to formatDate for YYYY-MM-DD inputs
+
+  const slashMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (slashMatch) {
+    const [, day, month, year] = slashMatch;
+    const mon = MONTH_NAMES[parseInt(month, 10) - 1];
+    return `${day.padStart(2, "0")}-${mon}-${year}`;
+  }
+
   return formatDate(trimmed);
 };
 
-// Parses amounts that may be quoted, spaced, or contain dashes (e.g. " 149,500.00 ", " -   ")
 const parseIncidentAmount = (value) => {
   if (!value) return 0;
   const trimmed = value.trim().replace(/"/g, "").trim();
@@ -264,7 +276,6 @@ export const createFraudIncidentFromCSV = async (req, res) => {
     fs.createReadStream(filePath)
       .pipe(
         csv({
-          // Use proper comma-separated parsing so quoted fields (e.g. " 149,500.00 ") are kept intact
           mapHeaders: ({ header }) => header.trim(),
         })
       )
@@ -273,13 +284,8 @@ export const createFraudIncidentFromCSV = async (req, res) => {
       })
       .on("end", async () => {
         for (const row of results) {
-          // CSV columns: Row ID | PSP ID | Report date | Sub county code | Sub fraud code |
-          //              Fraud category flag | Victim category | Victim information |
-          //              Date of occurrence | Number of incidences | Amount involved |
-          //              Amount lost | Amount recovered | Action taken | Recovery details | Comment
           const values = Object.values(row);
 
-          // Skip header-only rows or empty rows
           if (!values[1] || values[1].trim() === "PSP ID") continue;
 
           try {
@@ -287,10 +293,10 @@ export const createFraudIncidentFromCSV = async (req, res) => {
               data: {
                 pspId: (values[1] ?? "").trim(),
                 reportingDate: parseIncidentDate(values[2]),
-                subCountyCode: (values[3] ?? "").trim(),
-                subFraudCode: (values[4] ?? "").trim(),
-                fraudCategoryFlag: (values[5] ?? "").trim(),
-                victimCategory: (values[6] ?? "").trim(),
+                subCountyCode: getSubCountyCode(values[3] ?? ""),
+                subFraudCode: getSubFraudCode(values[4] ?? ""),
+                fraudCategoryFlag: getFraudCategoryCode(values[5] ?? ""),
+                victimCategory: getVictimCategoryCode(values[6] ?? ""),
                 victimInfo: (values[7] ?? "").trim(),
                 dateOfOccurence: parseIncidentDate(values[8]),
                 numberOfIncidents: parseInt(values[9]) || 0,

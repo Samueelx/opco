@@ -173,7 +173,7 @@ export const navLinks = [
     link: "/psp-schedule-of-system-stability-and-service-interruption",
     userType: "nps",
     category: "psp",
-    frequency: "monthly"
+    frequency: "Daily"
   },
     {
     id: 31,

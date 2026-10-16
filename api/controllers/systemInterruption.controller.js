@@ -26,7 +26,7 @@ export const getSystemInterruptions = async (req, res) => {
   }
 };
 
-// Get a System Interruptions
+// Get a System Interruption
 export const getSystemInterruption = async (req, res) => {
   const rowId = req.params.rowId;
   const token = req.cookies?.token;
@@ -68,7 +68,7 @@ export const createSystemInterruption = async (req, res) => {
     remedialStatusCode,
     systemUptime,
   } = req.body;
-  // const tokenUserId = req.userId;
+  
   const token = req.cookies?.token;
 
   try {
@@ -221,46 +221,65 @@ export const createSystemInterruptionFromCSV = async (req, res) => {
         rows.push(row);
       })
       .on("end", async () => {
+        let successCount = 0;
+        let failCount = 0;
+
         for (const row of rows) {
           const newSplit = Object.values(row)[0].split(",");
+
+          // Skip the header row to prevent Prisma validation errors
+          if (newSplit[0] === "ROW_ID" || newSplit[1] === "PSP_CODE") continue;
+
+          // Helper to convert "None" or empty strings to null for optional fields
+          const parseOptional = (val) => (!val || val.trim() === "None" ? null : val.trim());
 
           try {
             await prisma.systemInterruption.create({
               data: {
-                pspId: newSplit[0],
-                reportingDate: newSplit[1],
-                subCountyCode: newSplit[2],
-                systemOwnerFlag: newSplit[3],
-                thirdPartyOwnedCategory: newSplit[4],
-                thirdPartyName: newSplit[5],
-                productType: newSplit[6],
-                systemUnavailabilityTypeCode: newSplit[7],
-                thirdPartySystemAffected: newSplit[8],
-                systemInterruptionCauseCode: newSplit[9],
-                severityInterruptionCode: newSplit[10],
-                recoveryTimeCode: newSplit[11],
-                remedialStatusCode: newSplit[12],
-                systemUptime: parseAmount(newSplit[13]),
+                // newSplit[0] is ROW_ID, which we ignore since Prisma auto-generates the _id
+                pspId: newSplit[1]?.trim(),
+                reportingDate: newSplit[2]?.trim(),
+                subCountyCode: newSplit[3]?.trim(),
+                systemOwnerFlag: newSplit[4]?.trim(),
+                thirdPartyOwnedCategory: parseOptional(newSplit[5]),
+                thirdPartyName: parseOptional(newSplit[6]),
+                productType: newSplit[7]?.trim(),
+                systemUnavailabilityTypeCode: newSplit[8]?.trim(),
+                thirdPartySystemAffected: parseOptional(newSplit[9]),
+                systemInterruptionCauseCode: newSplit[10]?.trim(),
+                severityInterruptionCode: newSplit[11]?.trim(),
+                recoveryTimeCode: newSplit[12]?.trim(),
+                remedialStatusCode: newSplit[13]?.trim(),
+                systemUptime: parseAmount(newSplit[14]),
               },
             });
+            successCount++;
           } catch (error) {
+            failCount++;
             console.error(
-              `Failed to create a System Interruption entry for row: ${JSON.stringify(
-                row
-              )}`,
-              error
+              `Failed to create System Interruption entry for row: ${newSplit[1]}`,
+              error.message
             );
           }
         }
 
-        res.status(201).json({ message: "CSV file processed successfully" });
+        // Return a more accurate response so you know if data actually saved
+        if (successCount === 0 && failCount > 0) {
+            return res.status(400).json({ message: "All rows failed validation.", failures: failCount });
+        }
+
+        res.status(201).json({ 
+            message: "CSV processing completed", 
+            success: successCount, 
+            failures: failCount 
+        });
       })
       .on("error", (error) => {
         console.error("Error reading CSV file:", error);
         res.status(500).json({ message: "Error reading CSV file", error });
       });
   } catch (error) {
-    console.error("Failed to process the CSV file:", error); // Enhanced error logging
+    console.error("Failed to process the CSV file:", error);
     res.status(500).json({
       message: "Failed to process the CSV file!",
       error,

@@ -4,7 +4,7 @@ import path from "path";
 import csv from "csv-parser";
 
 import prisma from "../lib/prisma.js";
-import { parseAmount, formatDateToCBKFormat } from "../utils/utils.js";
+import { parseAmount } from "../utils/utils.js";
 
 // Get all Trustees
 export const getTrustees = async (req, res) => {
@@ -18,13 +18,7 @@ export const getTrustees = async (req, res) => {
 
     const allTrustees = await prisma.trustee.findMany();
 
-    const formatted = allTrustees.map((t) => ({
-      ...t,
-      reportingDate: formatDateToCBKFormat(t.reportingDate),
-      dateOfBirth: formatDateToCBKFormat(t.dateOfBirth),
-    }));
-
-    res.status(200).json(formatted);
+    res.status(200).json(allTrustees);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch Trustees!", error });
   }
@@ -46,13 +40,7 @@ export const getTrustee = async (req, res) => {
       where: { rowId },
     });
 
-    const formatted = oneTrustee ? {
-      ...oneTrustee,
-      reportingDate: formatDateToCBKFormat(oneTrustee.reportingDate),
-      dateOfBirth: formatDateToCBKFormat(oneTrustee.dateOfBirth),
-    } : oneTrustee;
-
-    res.status(200).json(formatted);
+    res.status(200).json(oneTrustee);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch Trustee!", error });
   }

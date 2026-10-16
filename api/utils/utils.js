@@ -5,20 +5,7 @@ export const parseAmount = (value) => {
     return parseFloat(value) || 0;
   }
 
-  export function formatDateToCBKFormat(dateStr) {
-  if (!dateStr) return dateStr;
-  const MONTHS = [
-    "JAN","FEB","MAR","APR","MAY","JUN",
-    "JUL","AUG","SEP","OCT","NOV","DEC",
-  ];
-  const [yearPart, monthPart, dayPart] = dateStr.split("-");
-  if (!yearPart || !monthPart || !dayPart) return dateStr;
-  const month = MONTHS[Number(monthPart) - 1];
-  const twoDigitYear = yearPart.slice(-2);
-  return `${dayPart}-${month}-${twoDigitYear}`;
-}
-
-export function formatDateToIncidentDateFormat(reportingDate){
+  export function formatDateToIncidentDateFormat(reportingDate){
     if (!reportingDate) {
       return;
     }

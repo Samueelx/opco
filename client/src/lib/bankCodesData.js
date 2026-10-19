@@ -369,8 +369,10 @@ export const airtelBankAccnts = [
   {code: "0000002", name: "Standard Chartered Bank Kenya Limited", accounts:["0100503550000", "01-060-035500-02"]},
   {code: "0000003", name: "ABSA Bank Kenya PLC", accounts:["2038497734", "2052446352"]},
   {code: "0000007", name: "NCBA Kenya PLC", accounts:["7922710015", "7922710028"]},
+  {code: "0000010", name: "Prime Bank Limited", accounts:["3000256804"]},
   {code: "0000011", name: "Co-operative Bank of Kenya Limited", accounts:["01136855534600", "01108555346002"]},
   {code: "0000031", name: "Stanbic Bank Kenya Limited", accounts:["0100005988149", "0100013831704"]},
+  {code: "0000057", name: "I&M Bank (Kenya) Ltd", accounts:["1006587196250"]},
   {code: "0000068", name: "Equity Bank Kenya Limited", accounts:["0810262907103", "0810285827623"]},
 ]
 

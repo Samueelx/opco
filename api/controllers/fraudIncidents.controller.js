@@ -111,13 +111,13 @@ export const createFraudIncident = async (req, res) => {
     const newFraudIncident = await prisma.fraudIncident.create({
       data: {
         pspId,
-        reportingDate: formatDate(reportingDate),
+        reportingDate: parseIncidentDate(reportingDate),
         subCountyCode: getSubCountyCode(subCountyCode),
         subFraudCode: getSubFraudCode(subFraudCode),
         fraudCategoryFlag: getFraudCategoryCode(fraudCategoryFlag),
         victimCategory: getVictimCategoryCode(victimCategory),
         victimInfo,
-        dateOfOccurence: formatDate(dateOfOccurence),
+        dateOfOccurence: parseIncidentDate(dateOfOccurence),
         numberOfIncidents: parseInt(numberOfIncidents),
         amountInvolved: parseAmount(amountInvolved),
         amountLost: parseAmount(amountLost),
@@ -167,13 +167,13 @@ export const updateFraudIncident = async (req, res) => {
       where: { rowId },
       data: {
         pspId,
-        reportingDate: formatDate(reportingDate),
+        reportingDate: parseIncidentDate(reportingDate),
         subCountyCode: getSubCountyCode(subCountyCode),
         subFraudCode: getSubFraudCode(subFraudCode),
         fraudCategoryFlag: getFraudCategoryCode(fraudCategoryFlag),
         victimCategory: getVictimCategoryCode(victimCategory),
         victimInfo,
-        dateOfOccurence: formatDate(dateOfOccurence),
+        dateOfOccurence: parseIncidentDate(dateOfOccurence),
         numberOfIncidents: parseInt(numberOfIncidents),
         amountInvolved: parseAmount(amountInvolved),
         amountLost: parseAmount(amountLost),
@@ -237,9 +237,10 @@ const parseIncidentDate = (value) => {
     return `${day.padStart(2, "0")}-${normalizedMon}-${year}`;
   }
 
-  const slashMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  const slashMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
   if (slashMatch) {
-    const [, day, month, year] = slashMatch;
+    const [, day, month, yr] = slashMatch;
+    const year = yr.length === 2 ? `20${yr}` : yr;
     const mon = MONTH_NAMES[parseInt(month, 10) - 1];
     return `${day.padStart(2, "0")}-${mon}-${year}`;
   }

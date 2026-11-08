@@ -72,7 +72,7 @@ const subCountyMap = {
   
   export const getSubCountyCode = (input) => {
     if (!input) return "";
-    const cleanInput = input.trim().toUpperCase();
+    const cleanInput = input.trim().toUpperCase().replace(/\s+/g, " ");
     return subCountyMap[cleanInput] || input.trim();
   };
   
@@ -83,12 +83,13 @@ const subCountyMap = {
     "BANK": "VCCD03",
     "MOBILE PSP": "VCCD04",
     "NONE, NO FRAUD OCCURRED": "VCCD05",
+    "NONE, NO FRAUD OCCURED": "VCCD05",
     "ANY OTHER": "VCCD99"
   };
   
   export const getVictimCategoryCode = (input) => {
     if (!input) return "";
-    const cleanInput = input.trim().toUpperCase();
+    const cleanInput = input.trim().toUpperCase().replace(/\s+/g, " ");
     return victimCategoryMap[cleanInput] || input.trim();
   };
   
@@ -101,7 +102,7 @@ const subCountyMap = {
   
   export const getFraudCategoryCode = (input) => {
     if (!input) return "";
-    const cleanInput = input.trim().toUpperCase();
+    const cleanInput = input.trim().toUpperCase().replace(/\s+/g, " ");
     return fraudCategoryMap[cleanInput] || input.trim();
   };
   
@@ -139,6 +140,7 @@ const subCountyMap = {
     "PIN THEFT": "CONPIN",
     "IDENTITY THEFT": "CONIDEN",
     "IMPERSONIFICATION": "CONIMPER",
+    "IMPERSONATION": "CONIMPER",
     "ATM": "ATM",
     "AGENT": "AG",
     "NO INCIDENT HAPPENED": "INCNO"
@@ -146,6 +148,28 @@ const subCountyMap = {
   
   export const getSubFraudCode = (input) => {
     if (!input) return "";
-    const cleanInput = input.trim().toUpperCase();
+    const cleanInput = input
+      .trim()
+      .toUpperCase()
+      .replace(/\s+/g, " ")
+      .replace(/\(\s+/g, "(")
+      .replace(/\s+\)/g, ")");
     return subFraudMap[cleanInput] || input.trim();
+  };
+
+  // Map of Recovery Details to Prisma RecoveryStatus enum values
+  const recoveryDetailsMap = {
+    "COMPLETE": "Complete",
+    "COMPLETED": "Complete",
+    "INCOMPLETE": "Incomplete",
+    "INCOMPLETED": "Incomplete",
+    "NOT COMPLETE": "Incomplete",
+    "NOT COMPLETED": "Incomplete",
+    "PENDING": "Incomplete",
+  };
+
+  export const getRecoveryDetails = (input) => {
+    if (!input) return "Incomplete";
+    const cleanInput = input.trim().toUpperCase().replace(/\s+/g, " ");
+    return recoveryDetailsMap[cleanInput] || input.trim();
   };

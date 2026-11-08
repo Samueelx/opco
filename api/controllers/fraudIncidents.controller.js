@@ -10,7 +10,8 @@ import {
   getSubCountyCode, 
   getVictimCategoryCode, 
   getFraudCategoryCode, 
-  getSubFraudCode 
+  getSubFraudCode,
+  getRecoveryDetails,
 } from "../utils/cbkMappings.js";
 
 // Get all Fraud Incidents
@@ -122,7 +123,7 @@ export const createFraudIncident = async (req, res) => {
         amountLost: parseAmount(amountLost),
         amountRecovered: parseAmount(amountRecovered),
         actionTaken,
-        recoveryDetails,
+        recoveryDetails: getRecoveryDetails(recoveryDetails),
       },
     });
 
@@ -178,7 +179,7 @@ export const updateFraudIncident = async (req, res) => {
         amountLost: parseAmount(amountLost),
         amountRecovered: parseAmount(amountRecovered),
         actionTaken,
-        recoveryDetails,
+        recoveryDetails: getRecoveryDetails(recoveryDetails),
       },
     });
 
@@ -232,7 +233,8 @@ const parseIncidentDate = (value) => {
   if (monMatch) {
     const [, day, mon, yr] = monMatch;
     const year = yr.length === 2 ? `20${yr}` : yr;
-    return `${day}-${mon}-${year}`;
+    const normalizedMon = mon.charAt(0).toUpperCase() + mon.slice(1).toLowerCase();
+    return `${day.padStart(2, "0")}-${normalizedMon}-${year}`;
   }
 
   const slashMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
@@ -304,7 +306,7 @@ export const createFraudIncidentFromCSV = async (req, res) => {
                 amountLost: parseIncidentAmount(values[11]),
                 amountRecovered: parseIncidentAmount(values[12]),
                 actionTaken: (values[13] ?? "").trim(),
-                recoveryDetails: (values[14] ?? "").trim(),
+                recoveryDetails: getRecoveryDetails(values[14] ?? ""),
               },
             });
             createdRecords.push(created);

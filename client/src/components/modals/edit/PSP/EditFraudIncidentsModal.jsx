@@ -89,6 +89,7 @@ export default function EditFraudIncidentsModal({
                         <select
                             name="pspId"
                             id="pspId"
+                            defaultValue={trustAcc.pspId}
                             required
                             className="outline-none border p-1.5 rounded"
                           >
@@ -124,6 +125,7 @@ export default function EditFraudIncidentsModal({
                         <select
                           name="subCountyCode"
                           id="subCountyCode"
+                          defaultValue={trustAcc.subCountyCode}
                           required
                           className="outline-none border p-1.5 rounded"
                         >
@@ -143,6 +145,7 @@ export default function EditFraudIncidentsModal({
                         <select
                             name="subFraudCode"
                             id="subFraudCode"
+                            defaultValue={trustAcc.subFraudCode}
                             required
                             className="outline-none border p-1.5 rounded"
                           >
@@ -162,6 +165,7 @@ export default function EditFraudIncidentsModal({
                         <select
                             name="fraudCategoryFlag"
                             id="fraudCategoryFlag"
+                            defaultValue={trustAcc.fraudCategoryFlag}
                             required
                             className="outline-none border p-1.5 rounded"
                           >
@@ -181,6 +185,7 @@ export default function EditFraudIncidentsModal({
                         <select
                             name="victimCategory"
                             id="victimCategory"
+                            defaultValue={trustAcc.victimCategory}
                             required
                             className="outline-none border p-1.5 rounded"
                           >
@@ -211,7 +216,7 @@ export default function EditFraudIncidentsModal({
                           type="text"
                           name="victimInfo"
                           id="victimInfo"
-                          defaultValue={victimAttributeCode.victimInfo}
+                          defaultValue={trustAcc.victimInfo}
                           className="outline-none border p-1.5 rounded"
                           required
                         />
